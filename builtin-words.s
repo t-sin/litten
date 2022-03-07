@@ -1,9 +1,12 @@
 	.intel_syntax noprefix
 
 	.globl word_quit
+
 	.globl word_newline
 	.globl word_readch
 	.globl word_writech
+
+	.globl word_lit
 
 	.macro NEXT
 	jmp inner_interpreter
@@ -49,4 +52,10 @@ word_newline:
 	lea rbx, line_buffer
 	mov rcx, 1
 	call syscall_write
+	NEXT
+
+word_lit:
+	mov rax, [r15]
+	add r15, 8
+	push rax
 	NEXT
