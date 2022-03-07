@@ -11,10 +11,6 @@ main_start:
 	lea r15, main_code
 	jmp inner_interpreter
 
-main_quit:
-	mov rax, 0
-	ret
-
 # Forth's inner interpreter
 # it uses these registers:
 #
