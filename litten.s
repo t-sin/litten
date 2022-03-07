@@ -24,8 +24,25 @@ inner_interpreter:
 
 	.data
 
+
+	.macro PUTCH ch
+	.dc.a word_lit
+	.dc.a \ch
+	.dc.a word_writech
+	.endm
+
 main_code:
 	.dc.a word_readch
 	.dc.a word_writech
-	.dc.a word_newline
+	PUTCH 'h
+	PUTCH 'e
+	PUTCH 'l
+	PUTCH 'l
+	PUTCH 'o
+	PUTCH ' 
+	PUTCH 'w
+	PUTCH 'o
+	PUTCH 'r
+	PUTCH 'l
+	PUTCH 'd
 	.dc.a word_quit
