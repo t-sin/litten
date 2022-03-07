@@ -1,18 +1,22 @@
 PROGRAM = litten
-ASM = builtin-words.s
+ASM = litten.o pstack.o syscall.o builtin-words.o
 
-CFLAGS = -no-pie -masm=intel
+ASFLAGS = -msyntax=intel
 
 .PHONY: all
 all: $(PROGRAM)
 
 .PHONY: debug
-debug: CFLAGS+=-g -O0
+debug: ASFLAGS+=-g
 debug: clean all
 
+.s.o:
+	as $(ASFLAGS) $^ -o $@
+
 $(PROGRAM): $(ASM)
-	gcc $(CFLAGS) $(PROGRAM).s -o $(PROGRAM)
+	ld $(LDFLAGS) $^ -o $(PROGRAM)
 
 .PHONY: clean
 clean:
+	rm -f *.o
 	rm -f $(PROGRAM)
