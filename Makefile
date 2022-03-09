@@ -1,5 +1,5 @@
 PROGRAM = litten
-ASM = litten.o pstack.o syscall.o builtin-words.o
+ASM = litten.o syscall.o
 
 ASFLAGS = -msyntax=intel
 
