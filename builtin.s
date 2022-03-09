@@ -41,7 +41,7 @@ word_exit:
 word_lit:
 	mov rax, [r15]
 	add r15, 8
-	push rax
+	PPUSH rax
 	NEXT
 
 ## system words
@@ -59,11 +59,11 @@ word_readch:
 	call syscall_read
 	mov rax, 0
 	mov al, [line_buffer + 0]
-	push rax
+	PPUSH rax
 	NEXT
 
 word_writech:
-	pop rax
+	PPOP rax
 	mov byte ptr [line_buffer + 0], al
 	mov rax, 1                         # 1 is for stdout
 	lea rbx, line_buffer
