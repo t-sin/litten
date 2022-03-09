@@ -1,15 +1,4 @@
 	.intel_syntax noprefix
-
-	.globl word_docol
-	.globl word_exit
-	.globl word_lit
-
-	.globl word_quit
-
-	.globl word_readch
-	.globl word_writech
-	.globl word_newline
-
 	.text
 
 .include "macro.s"
@@ -69,13 +58,16 @@ word_\name:
 	mov r15, rax
 	NEXT
 
-# an IP progression macro for user-defined words
+
+# progress IP at the end of colon-defined words
 #
-word_exit:
+	DEFWORD "exit", 4, 0
 	RPOP r15
 	NEXT
 
-word_lit:
+# push an integer literal following this word to pstack
+# this is an immediate word
+	DEFWORD "lit", 3, 0x80
 	mov rax, [r15]
 	add r15, 8
 	PPUSH rax
@@ -83,13 +75,15 @@ word_lit:
 
 ## system words
 
-word_quit:
+# exit litten system with status code 0
+	DEFWORD "quit", 4, 0
 	mov rax, 0
 	call syscall_exit
 
 ## I/O words
 
-word_readch:
+# read one character from stdin
+	DEFWORD "readch", 6, 0
 	mov rax, 0                         # 0 is for stdin
 	lea rbx, line_buffer
 	mov rcx, 1
@@ -99,7 +93,8 @@ word_readch:
 	PPUSH rax
 	NEXT
 
-word_writech:
+# write one character to stdout
+	DEFWORD "writech", 7, 0
 	PPOP rax
 	mov byte ptr [line_buffer + 0], al
 	mov rax, 1                         # 1 is for stdout
@@ -108,7 +103,8 @@ word_writech:
 	call syscall_write
 	NEXT
 
-word_newline:
+# write newline to stdout
+	DEFWORD "newline", 7, 0
 	mov al, 0x0a
 	mov byte ptr [line_buffer + 0], al
 	mov rax, 1                         # 1 is for stdout
