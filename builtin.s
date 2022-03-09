@@ -11,7 +11,8 @@
 #   flags:   if non-zero this word is an immediate word.
 #            so, in compilation mode, this word is executed, not compiled.
 #
-	.set _defword_link, 0
+	.set defword_link, 0
+	.globl defword_link
 
 	.macro DEFWORD name namelen flags
 
@@ -30,8 +31,8 @@
 
 	# link field
 	.align 8
-	.dc.a _defword_link
-	.set _defword_link, _defword_head
+	.dc.a defword_link
+	.set defword_link, _defword_head
 
 	# codeptr
 	.align 8
