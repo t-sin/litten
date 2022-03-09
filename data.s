@@ -10,9 +10,11 @@
 	.globl rstack_bottom
 	.globl rstack_size
 
+	.globl dict_start
+	.globl dict_size
+
 	.globl line_buffer
 	.globl line_size
-
 
 ##
 # input line buffer
@@ -42,3 +44,13 @@ rstack_max:
 	.skip 0x10000
 rstack_bottom:
 rstack_size = . - rstack_max
+
+##
+# dictionary
+#
+# Forth's word dictionary.
+# heap memory is not garbage collected and glows to bottom.
+# r12 register stores its bottom address.
+dict_start:
+	.skip 0x800000
+dict_size = . - dict_start

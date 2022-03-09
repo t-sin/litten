@@ -15,6 +15,7 @@ main_start:
 
 	.text
 
+
 ## setup Forth's states
 #
 # input:
@@ -25,11 +26,15 @@ main_start:
 #   r15: Forth's instruction pointer (IP)
 #   r14: Return stack pointer (RSP)
 #   r13: Parameter stack pointer (SP)
+#   r12: Next dictionary entry (NP)
+#   r11: Latest dictionary entry (LATEST)
 #
 setup_system:
 	mov r15, rax
 	lea r14, rstack_bottom
 	lea r13, pstack_bottom
+	lea r12, dict_start
+	lea r11, defword_link
 	ret
 
 # Forth's toplevel inner interpreter
