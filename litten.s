@@ -52,17 +52,17 @@ inner_interpreter:
 	.macro PUTCH ch
 	.dc.a word_lit
 	.dc.a \ch
-	.dc.a word_writech
+	.dc.a word_emit
 	.endm
 
 main_code:
-	.dc.a word_readch
-	.dc.a word_writech
+	.dc.a word_key
+	.dc.a word_emit
 	.dc.a word_docol
 	.dc.a hello_code
 	.dc.a word_lit
 	.dc.a '*
-	.dc.a word_writech
+	.dc.a word_emit
 	.dc.a word_quit
 
 hello_code:

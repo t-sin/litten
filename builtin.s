@@ -84,7 +84,7 @@ word_\name:
 ## I/O words
 
 # read one character from stdin
-	DEFWORD "readch", 6, 0
+	DEFWORD "key", 3, 0
 	mov rax, 0                         # 0 is for stdin
 	lea rbx, line_buffer
 	mov rcx, 1
@@ -95,7 +95,7 @@ word_\name:
 	NEXT
 
 # write one character to stdout
-	DEFWORD "writech", 7, 0
+	DEFWORD "emit", 4, 0
 	PPOP rax
 	mov byte ptr [line_buffer + 0], al
 	mov rax, 1                         # 1 is for stdout
@@ -105,7 +105,7 @@ word_\name:
 	NEXT
 
 # write newline to stdout
-	DEFWORD "newline", 7, 0
+	DEFWORD "nl", 2, 0
 	mov al, 0x0a
 	mov byte ptr [line_buffer + 0], al
 	mov rax, 1                         # 1 is for stdout
