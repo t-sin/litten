@@ -34,10 +34,6 @@
 	.dc.a defword_link
 	.set defword_link, _defword_head
 
-	# codeptr
-	.align 8
-	.dc.a . + 8
-
 word_\name:
 	.endm
 
