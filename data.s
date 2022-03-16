@@ -20,7 +20,7 @@
 # input line buffer
 #
 line_buffer:
-	.skip 256
+	.skip 0xff
 line_size = . - line_buffer
 
 ##
