@@ -7,6 +7,8 @@
 
 	.text
 
+	.include "macro.s"
+
 # Call exit() system call.
 #
 # input:
@@ -34,11 +36,19 @@ syscall_exit:
 #   https://linuxjm.osdn.jp/html/LDP_man-pages/man2/read.2.html
 #
 syscall_read:
+	RPUSH rdi
+	RPUSH rsi
+	RPUSH rdx
+
 	mov rdi, rax  # set fd
 	mov rsi, rbx  # set buffer address
 	mov rdx, rcx  # set num of input
 	mov rax, 0    # system call number for read() in x86-64
 	syscall
+
+	RPOP rdi
+	RPOP rsi
+	RPOP rdx
 	ret
 
 # Call write() system call.
@@ -55,11 +65,19 @@ syscall_read:
 #   https://linuxjm.osdn.jp/html/LDP_man-pages/man2/write.2.html
 #
 syscall_write:
+	RPUSH rdi
+	RPUSH rsi
+	RPUSH rdx
+
 	mov rdi, rax  # set fd
 	mov rsi, rbx  # set buffer address
 	mov rdx, rcx  # set num of output
 	mov rax, 1    # system call number for write() in x86-64
 	syscall
+
+	RPOP rdi
+	RPOP rsi
+	RPOP rdx
 	ret
 
 # Call mmap() system call to allocate memory.
@@ -76,6 +94,13 @@ syscall_write:
 #   man of mmap(): https://linuxjm.osdn.jp/html/LDP_man-pages/man2/mmap.2.html
 #
 syscall_mmap:
+	RPUSH rdi
+	RPUSH rsi
+	RPUSH rdx
+	RPUSH rcx
+	RPUSH r8
+	RPUSH r9
+
 	mov rdi, 0    # set addr to calucate mapped region. here it's NULL
 	mov rsi, rax  # set length to allocate
 	mov rdx, rbx  # set protection attributes
@@ -85,4 +110,11 @@ syscall_mmap:
 	mov r9, 0     # set offset. here it's ignored.
 	mov rax, 9    # system call number for mmap() in x86-64
 	syscall
+
+	RPOP rdi
+	RPOP rsi
+	RPOP rdx
+	RPOP rcx
+	RPOP r8
+	RPOP r9
 	ret
