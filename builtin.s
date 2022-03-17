@@ -3,6 +3,36 @@
 
 .include "macro.s"
 
+##
+# dictionary entry
+#
+# name     +---------+------+------+-----+------+
+# field:   | flg+len | ch1  | ch2  | ... | ch7  |  ... 64 bit
+#          +---------+------+------+-----+------+
+#          | ch8     | ch9  | ch10 | ... | ch15 |
+# link     +---------+------+------+-----+------+
+# field:   | pointer to previous entry          |
+#          +------------------------------------+
+# data     | code or data.                      |
+# field:   | it has its length if needed.       |
+#          +------------------------------------+
+#
+# flg+len
+#
+#   a `flg+len` byte stores how the entry behaves.
+#   it is formed with 8 bits as follows:
+#
+#     ih00llll
+#
+#   i: immediate bit
+#     this bit indicates this word is an immediate word; when this word appears in compilation mode,
+#     this word will be executed immediately, not will be compiled.
+#   h: hidden bit
+#     this bit indicates this word is a hidden word; this word is ignored while word finding process.
+#   l: length
+#     length of a name of this word.
+#
+
 # define words and create its dictionary entry
 #
 # input:
