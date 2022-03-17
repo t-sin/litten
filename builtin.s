@@ -54,6 +54,7 @@
 
 	.globl word_\name
 	.section .text
+
 	# name field
 	.align 8
 	.byte \namelen + \flags
@@ -66,6 +67,54 @@
 
 word_\name:
 	.endm
+
+# create one dictionary entry
+# after creating entry, NP (r12) is set to its parameter field head.
+#
+# (flags name -- )
+#
+#   flags: a flag byte for this entry
+#   name: a pointer to the name string ([64-bit len, ch0, ch1, ...])
+#
+	DEFWORD "create", 6, 0x8
+word_create:
+	PPOP rbx        # name
+	PPOP rax        # flags
+
+	# set a flag byte
+	mov rcx, qword ptr [rbx]
+	# TODO: check if `rcx < 16`
+	or al, cl       # assumes that cl is less than 16
+	mov rdx, 0
+	mov byte ptr [r12 + rdx], al
+	add rdx, 1
+
+	# create name field
+_name_copy_loop:
+	add rdx, 1
+	cmp rcx, rdx
+	je _name_copy_end
+	mov sil, byte ptr [rbx + rdx]
+	mov byte ptr [r12 + rdx], sil
+	add rdx, 1
+	jmp _name_copy_loop
+_name_copy_end:
+	cmp rcx, 0x08
+	jg _2qword_name
+	# 1qword name
+	add rdx, 0x08
+	jmp _create_link_field
+_2qword_name:
+	add rdx, 0x0f
+
+_create_link_field:
+	# create link field
+	mov qword ptr [r12 + rdx], r11
+	add rdx, 8
+	mov r11, r12
+	add r12, rdx
+
+	NEXT
 
 ##
 # built-in words
