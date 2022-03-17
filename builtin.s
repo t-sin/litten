@@ -161,20 +161,25 @@ _create_link_field:
 # read one character from stdin
 	DEFWORD "key", 3, 0
 	mov rax, 0                         # 0 is for stdin
-	lea rbx, line_buffer
+	lea rbx, input_buffer
+	mov rdx, 0
+	mov dx, word ptr [input_start]
+	add rbx, rdx
 	mov rcx, 1
 	call syscall_read
 	mov rax, 0
-	mov al, [line_buffer + 0]
+	mov al, [rbx]
 	PPUSH rax
 	NEXT
 
 # write one character to stdout
 	DEFWORD "emit", 4, 0
 	PPOP rax
-	mov byte ptr [line_buffer + 0], al
+	lea rbx, output_buffer
+	mov rdx, [output_start]
+	add rbx, rdx
+	mov byte ptr [rbx], al
 	mov rax, 1                         # 1 is for stdout
-	lea rbx, line_buffer
 	mov rcx, 1
 	call syscall_write
 	NEXT
@@ -182,9 +187,11 @@ _create_link_field:
 # write newline to stdout
 	DEFWORD "nl", 2, 0
 	mov al, 0x0a
-	mov byte ptr [line_buffer + 0], al
+	lea rbx, output_buffer
+	mov rdx, [output_start]
+	add rbx, rdx
+	mov byte ptr [rbx], al
 	mov rax, 1                         # 1 is for stdout
-	lea rbx, line_buffer
 	mov rcx, 1
 	call syscall_write
 	NEXT

@@ -13,15 +13,37 @@
 	.globl dict_start
 	.globl dict_size
 
-	.globl line_buffer
-	.globl line_size
+	.globl input_len
+	.globl input_start
+	.globl input_buffer
+	.globl input_buffer_size
+
+	.globl output_len
+	.globl output_start
+	.globl output_buffer
+	.globl output_buffer_size
 
 ##
 # input line buffer
 #
-line_buffer:
-	.skip 0xff
-line_size = . - line_buffer
+input_start:
+	.dc.a 0
+input_len:
+	.skip 8
+input_buffer:
+	.skip 2048
+input_buffer_size = . - input_buffer
+
+##
+# output buffer
+output_start:
+	.dc.a 0
+output_len:
+	.skip 8
+output_buffer:
+	.skip 2048
+output_buffer_size = . - output_buffer
+
 
 ##
 # parameter stack
