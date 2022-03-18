@@ -56,16 +56,15 @@ inner_interpreter:
 	.endm
 
 main_code:
-	.dc.a word_key
-	.dc.a word_emit
 	.dc.a word_docol
-	.dc.a hello_code
+	.dc.a prompt_code
 	.dc.a word_lit
-	.dc.a '*
-	.dc.a word_emit
+	.dc.a ' 
+	.dc.a word_parse
+	.dc.a word_print
 	.dc.a word_quit
 
-hello_code:
-	PUTCH 'h
-	PUTCH 'i
+prompt_code:
+	PUTCH '>
+	PUTCH ' 
 	.dc.a word_exit

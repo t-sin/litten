@@ -195,3 +195,89 @@ _create_link_field:
 	mov rcx, 1
 	call syscall_write
 	NEXT
+
+# read one name from stdin
+#
+# ( ch -- addr )
+#
+#   ch: a delimiter
+#   addr: a pointer to string read
+#
+	DEFWORD "parse", 5, 0x8
+	mov r8, qword ptr [input_start]   # start position of input
+	mov r9, 0                         # all num read
+	PPOP r10                          # delimiter
+
+_parse_read:
+	mov rax, 0                          # stdin
+	mov rcx, offset input_buffer_size   # num input
+	mov rbx, offset input_buffer
+	add rbx, r8
+	call syscall_read
+
+	cmp rax, 0
+	jle _parse_read
+	jg _parse_read_ok
+
+_parse_read_ok:
+	mov rcx, 0     # num read in _parse_loop
+
+_parse_loop:
+	mov dil, byte ptr [rbx + rcx]
+	add rcx, 1
+	add r9, 1
+
+	cmp r9, offset input_buffer_size
+	jge _parse_reaches_buffer_max
+	jmp _parse_loop_cond
+
+_parse_reaches_buffer_max:
+	# TODO: handle error
+
+_parse_loop_cond:
+	cmp dil, r10b  # is a character read the delimiter?
+	je _parse_end
+
+	cmp rcx, rax
+	je _parse_reread
+	jmp _parse_loop
+
+_parse_reread:
+	add r9, rcx
+	mov r8, r9
+	jmp _parse_read
+
+_parse_end:
+	add r9, -1
+	mov qword ptr [input_len], r9
+	mov rax, offset input_len
+	PPUSH rax
+
+	NEXT
+
+# print string
+#
+# ( addr -- )
+#
+	DEFWORD "print", 5, 0x8
+	PPOP rax
+	mov rbx, qword ptr [rax]  # length of string
+	add rax, 8                # body of string
+	mov rcx, 0                # output count
+	lea rdx, output_buffer
+
+_copy_str_loop:
+	mov rsi, 0
+	mov sil, [rax + rcx]
+	mov byte ptr [output_buffer + rcx], sil
+	add rcx, 1
+
+	cmp rcx, rbx
+	jne _copy_str_loop
+
+	mov rax, 1              # 1 is for stdout
+	lea rbx, output_buffer
+	mov rcx, rcx            # num of output
+	call syscall_write
+
+	NEXT
