@@ -1,7 +1,5 @@
 	.intel_syntax noprefix
 
-	.data
-
 	.globl pstack_max
 	.globl pstack_bottom
 	.globl pstack_size
@@ -22,6 +20,8 @@
 	.globl output_start
 	.globl output_buffer
 	.globl output_buffer_size
+
+	.data
 
 ##
 # input line buffer
@@ -44,6 +44,7 @@ output_buffer:
 	.skip 2048
 output_buffer_size = . - output_buffer
 
+	.bss
 
 ##
 # parameter stack
