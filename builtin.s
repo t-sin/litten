@@ -134,7 +134,7 @@ word_\name:
 #   addr: a pointer to the body of name string
 #   u: length of name string
 #
-	DEFWORD "CREATE", 6, 0x8
+	DEFWORD "CREATE", 6, 0x80
 word_create:
 	PPOP rax    # length of name string
 	PPOP rbx    # body of name string
@@ -182,7 +182,7 @@ _create_link_field:
 # if such word is not found, addr2 is addr1 and u is zero.
 #
 # ( addr1 u -- addr2 u )
-	DEFWORD "FIND", 4, 0x8
+	DEFWORD "FIND", 4, 0x80
 	PPOP rax                 # body of name for searching
 	PPOP rbx                 # length of name for searching
 	mov rcx, r11             # current entry
@@ -315,7 +315,7 @@ _find_word_not_found:
 #   u: a delimiter character
 #   addr: a pointer to string read
 #
-	DEFWORD "PARSE", 5, 0x8
+	DEFWORD "PARSE", 5, 0x80
 	mov r8, qword ptr [input_start]   # start position of input
 	mov r9, 0                         # all num read
 	PPOP r10                          # delimiter
@@ -371,7 +371,7 @@ _parse_end:
 #
 # ( addr u -- )
 #
-	DEFWORD "PRINT", 5, 0x8
+	DEFWORD "PRINT", 5, 0x80
 	PPOP rax        # length of string
 	PPOP rbx        # body of string
 	mov rcx, 0      # output count
