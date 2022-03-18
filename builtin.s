@@ -68,6 +68,48 @@
 word_\name:
 	.endm
 
+##
+# built-in words
+#
+
+## Forth primitives
+
+# this is a starter word for colon-defined words.
+# the code of colon-defined words must start with DOCOL words.
+#
+	DEFWORD "docol", 5, 0
+	mov rax, [r15]
+	add r15, 8
+	mov rbx, r15
+	RPUSH rbx
+	mov r15, rax
+	NEXT
+
+
+# progress IP at the end of colon-defined words
+#
+	DEFWORD "exit", 4, 0
+	RPOP r15
+	NEXT
+
+# push an integer literal following this word to pstack
+# this is an immediate word
+	DEFWORD "lit", 3, 0x80
+	mov rax, [r15]
+	add r15, 8
+	PPUSH rax
+	NEXT
+
+## system words
+
+# exit litten system with status code 0
+	DEFWORD "quit", 4, 0
+	mov rax, 0
+	call syscall_exit
+
+##
+# dictionary-related words
+
 # create one dictionary entry
 # after creating entry, NP (r12) is set to its parameter field head.
 #
@@ -117,46 +159,8 @@ _create_link_field:
 	NEXT
 
 ##
-# built-in words
+# I/O words
 #
-
-
-## Forth primitives
-
-# this is a starter word for colon-defined words.
-# the code of colon-defined words must start with DOCOL words.
-#
-	DEFWORD "docol", 5, 0
-	mov rax, [r15]
-	add r15, 8
-	mov rbx, r15
-	RPUSH rbx
-	mov r15, rax
-	NEXT
-
-
-# progress IP at the end of colon-defined words
-#
-	DEFWORD "exit", 4, 0
-	RPOP r15
-	NEXT
-
-# push an integer literal following this word to pstack
-# this is an immediate word
-	DEFWORD "lit", 3, 0x80
-	mov rax, [r15]
-	add r15, 8
-	PPUSH rax
-	NEXT
-
-## system words
-
-# exit litten system with status code 0
-	DEFWORD "quit", 4, 0
-	mov rax, 0
-	call syscall_exit
-
-## I/O words
 
 # read one character from stdin
 	DEFWORD "key", 3, 0
