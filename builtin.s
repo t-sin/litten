@@ -77,7 +77,7 @@ word_\name:
 # this is a starter word for colon-defined words.
 # the code of colon-defined words must start with DOCOL words.
 #
-	DEFWORD "docol", 5, 0
+	DEFWORD "DOCOL", 5, 0
 	mov rax, [r15]
 	add r15, 8
 	mov rbx, r15
@@ -88,13 +88,13 @@ word_\name:
 
 # progress IP at the end of colon-defined words
 #
-	DEFWORD "exit", 4, 0
+	DEFWORD "EXIT", 4, 0
 	RPOP r15
 	NEXT
 
 # push an integer literal following this word to pstack
 # this is an immediate word
-	DEFWORD "lit", 3, 0x80
+	DEFWORD "LIT", 3, 0x80
 	mov rax, [r15]
 	add r15, 8
 	PPUSH rax
@@ -103,7 +103,7 @@ word_\name:
 ## system words
 
 # exit litten system with status code 0
-	DEFWORD "quit", 4, 0
+	DEFWORD "QUIT", 4, 0
 	mov rax, 0
 	call syscall_exit
 
@@ -118,7 +118,7 @@ word_\name:
 #   flags: a flag byte for this entry
 #   name: a pointer to the name string ([64-bit len, ch0, ch1, ...])
 #
-	DEFWORD "create", 6, 0x8
+	DEFWORD "CREATE", 6, 0x8
 word_create:
 	PPOP rbx        # name
 	PPOP rax        # flags
@@ -163,7 +163,7 @@ _create_link_field:
 #
 
 # read one character from stdin
-	DEFWORD "key", 3, 0
+	DEFWORD "KEY", 3, 0
 	mov rax, 0                         # 0 is for stdin
 	lea rbx, input_buffer
 	mov rdx, 0
@@ -177,7 +177,7 @@ _create_link_field:
 	NEXT
 
 # write one character to stdout
-	DEFWORD "emit", 4, 0
+	DEFWORD "EMIT", 4, 0
 	PPOP rax
 	lea rbx, output_buffer
 	mov rdx, [output_start]
@@ -189,7 +189,7 @@ _create_link_field:
 	NEXT
 
 # write newline to stdout
-	DEFWORD "nl", 2, 0
+	DEFWORD "NL", 2, 0
 	mov al, 0x0a
 	lea rbx, output_buffer
 	mov rdx, [output_start]
@@ -207,7 +207,7 @@ _create_link_field:
 #   ch: a delimiter
 #   addr: a pointer to string read
 #
-	DEFWORD "parse", 5, 0x8
+	DEFWORD "PARSE", 5, 0x8
 	mov r8, qword ptr [input_start]   # start position of input
 	mov r9, 0                         # all num read
 	PPOP r10                          # delimiter
@@ -263,7 +263,7 @@ _parse_end:
 #
 # ( addr u -- )
 #
-	DEFWORD "print", 5, 0x8
+	DEFWORD "PRINT", 5, 0x8
 	PPOP rax        # length of string
 	PPOP rbx        # body of string
 	mov rcx, 0      # output count
