@@ -44,7 +44,12 @@ syscall_read:
 	mov rsi, rbx  # set buffer address
 	mov rdx, rcx  # set num of input
 	mov rax, 0    # system call number for read() in x86-64
+
+	# syscall breaks r11 so save it
+	# cf. https://stackoverflow.com/questions/50571275/why-does-a-syscall-clobber-rcx-and-r11
+	RPUSH r11
 	syscall
+	RPOP r11
 
 	RPOP rdi
 	RPOP rsi
@@ -73,7 +78,9 @@ syscall_write:
 	mov rsi, rbx  # set buffer address
 	mov rdx, rcx  # set num of output
 	mov rax, 1    # system call number for write() in x86-64
+	RPUSH r11
 	syscall
+	RPOP r11
 
 	RPOP rdi
 	RPOP rsi
@@ -109,7 +116,9 @@ syscall_mmap:
 	mov r8, 0     # set fd to map with file. here it's ignored
 	mov r9, 0     # set offset. here it's ignored.
 	mov rax, 9    # system call number for mmap() in x86-64
+	RPUSH r11
 	syscall
+	RPOP r11
 
 	RPOP rdi
 	RPOP rsi
