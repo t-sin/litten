@@ -123,6 +123,7 @@ word_\name:
 
 ##
 # dictionary-related words
+#
 
 # create one dictionary entry
 # after creating entry, NP (r12) is set to its parameter field head.
@@ -172,6 +173,83 @@ _create_link_field:
 	mov r11, r12
 	add r12, rdx
 
+	NEXT
+
+
+# find a word named addr1 with length u in the dictionary.
+# if such word is found, addr2 is the address of the code filed of the word
+# and u is 1 if the word is immediate otherwise -1 (true).
+# if such word is not found, addr2 is addr1 and u is zero.
+#
+# ( addr1 u -- addr2 u )
+	DEFWORD "FIND", 4, 0x8
+	PPOP rax                 # body of name for searching
+	PPOP rbx                 # length of name for searching
+	mov rcx, r11             # current entry
+
+_find_loop:
+	cmp rcx, 0
+	je _find_word_not_found
+
+	mov dl, byte ptr [rcx]
+	and rdx, 0x0f            # length of name of the current entry
+
+	cmp rdx, rbx
+	jne _find_go_next_word
+
+	mov rdx, rcx
+	mov rsi, 0
+	add rdx, 1
+
+_find_name_equality:
+	mov dil, byte ptr [rdx + rsi]
+	mov bpl, byte ptr [rax + rsi]
+
+	cmp dil, bpl
+	jne _find_word_not_found
+
+	cmp rsi, rbx
+	jz _find_word_found
+
+	add rsi, 1
+
+	jmp _find_name_equality
+
+_find_go_next_word:
+	# check the name field length to calculate its link field
+	# 4 bit or higher denotes a number of qwords
+	mov rsi, rdx
+	and rsi, 0xf8
+	add rcx, rsi             # progress some qword
+
+	# lowest 3 bits denotes a modulo devided by 8
+	mov rsi, rdx
+	and rsi, 0x7
+	cmp rsi, 0
+	jz _find_loop
+
+	add rcx, 8
+	jmp _find_loop
+
+_find_word_found:
+	PPUSH rcx
+
+	mov al, byte ptr [rcx]
+	and rax, 0x80
+	cmp rax, 0
+	jnz _find_word_is_immediate
+
+	PPUSH -1                 # the word found is an immediate word
+	jmp _find_exit
+_find_word_is_immediate:
+	PPUSH 1                  # the word found is not an immediate word
+
+_find_exit:
+	NEXT
+
+_find_word_not_found:
+	PPUSH rax
+	PPUSH 0
 	NEXT
 
 ##
