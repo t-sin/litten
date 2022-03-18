@@ -198,7 +198,7 @@ _create_link_field:
 
 # read one name from stdin
 #
-# ( ch -- addr )
+# ( ch -- addr u)
 #
 #   ch: a delimiter
 #   addr: a pointer to string read
@@ -249,30 +249,29 @@ _parse_reread:
 
 _parse_end:
 	add r9, -1
-	mov qword ptr [input_len], r9
-	mov rax, offset input_len
+	mov rax, offset input_buffer
 	PPUSH rax
+	PPUSH r9
 
 	NEXT
 
 # print string
 #
-# ( addr -- )
+# ( addr u -- )
 #
 	DEFWORD "print", 5, 0x8
-	PPOP rax
-	mov rbx, qword ptr [rax]  # length of string
-	add rax, 8                # body of string
-	mov rcx, 0                # output count
+	PPOP rax        # length of string
+	PPOP rbx        # body of string
+	mov rcx, 0      # output count
 	lea rdx, output_buffer
 
 _copy_str_loop:
 	mov rsi, 0
-	mov sil, [rax + rcx]
+	mov sil, [rbx + rcx]
 	mov byte ptr [output_buffer + rcx], sil
 	add rcx, 1
 
-	cmp rcx, rbx
+	cmp rcx, rax
 	jne _copy_str_loop
 
 	mov rax, 1              # 1 is for stdout
