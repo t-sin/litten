@@ -74,8 +74,13 @@ word_\name:
 
 ## Forth primitives
 
+# enter the execution of the colon definition following after this word.
+# IP is set to the address of head of code field of the colon definition
+# and push the address following after the colon definition as a return address.
+# so the following address after this word must point the code field.
 # this is a starter word for colon-defined words.
-# the code of colon-defined words must start with DOCOL words.
+#
+# R: ( -- addr )
 #
 	DEFWORD "DOCOL", 5, 0
 	mov rax, [r15]
@@ -88,12 +93,18 @@ word_\name:
 
 # progress IP at the end of colon-defined words
 #
+# ( -- )
+#
 	DEFWORD "EXIT", 4, 0
 	RPOP r15
 	NEXT
 
 # push an integer literal following this word to pstack
+# this word is mainly used the compiler
 # this is an immediate word
+#
+# ( -- u )
+#
 	DEFWORD "LIT", 3, 0x80
 	mov rax, [r15]
 	add r15, 8
@@ -103,6 +114,9 @@ word_\name:
 ## system words
 
 # exit litten system with status code 0
+#
+# ( -- )
+#
 	DEFWORD "QUIT", 4, 0
 	mov rax, 0
 	call syscall_exit
@@ -163,6 +177,11 @@ _create_link_field:
 #
 
 # read one character from stdin
+#
+# ( -- u )
+#
+#   u: a character read
+#
 	DEFWORD "KEY", 3, 0
 	mov rax, 0                         # 0 is for stdin
 	lea rbx, input_buffer
@@ -176,7 +195,13 @@ _create_link_field:
 	PPUSH rax
 	NEXT
 
+
 # write one character to stdout
+#
+# ( u -- )
+#
+#   u: a character to output
+#
 	DEFWORD "EMIT", 4, 0
 	PPOP rax
 	lea rbx, output_buffer
@@ -189,6 +214,9 @@ _create_link_field:
 	NEXT
 
 # write newline to stdout
+#
+# ( -- )
+#
 	DEFWORD "NL", 2, 0
 	mov al, 0x0a
 	lea rbx, output_buffer
@@ -202,9 +230,9 @@ _create_link_field:
 
 # read one name from stdin
 #
-# ( ch -- addr u)
+# ( u -- addr u)
 #
-#   ch: a delimiter
+#   u: a delimiter character
 #   addr: a pointer to string read
 #
 	DEFWORD "PARSE", 5, 0x8
