@@ -29,6 +29,14 @@ main_start:
 #   r12: Next dictionary entry (NP)
 #   r11: Latest dictionary entry (LATEST)
 #
+
+	# なんかこれうごかない…
+	# .set IP,     r15
+	# .set RSP,    r14
+	# .set SP,     r13
+	# .set NP,     r12
+	# .set LATEST, r11
+
 setup_system:
 	mov r15, rax
 	lea r14, rstack_bottom
