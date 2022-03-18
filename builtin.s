@@ -253,6 +253,28 @@ _find_word_not_found:
 	NEXT
 
 ##
+# stack manupilation
+#
+
+# pop and discard one value from pstack
+#
+# ( v -- )
+#
+	DEFWORD "DROP", 4, 0
+	PPOP rax
+	NEXT
+
+# duplicate a value on the top of pstack
+#
+# ( v -- v v )
+#
+	DEFWORD "DUP", 3, 0
+	PPOP rax
+	PPUSH rax
+	PPUSH rax
+	NEXT
+
+##
 # I/O words
 #
 

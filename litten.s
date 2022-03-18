@@ -69,7 +69,9 @@ main_code:
 	.dc.a word_LIT
 	.dc.a ' 
 	.dc.a word_PARSE
-	.dc.a word_PRINT
+	.dc.a word_FIND
+	.dc.a word_DROP
+	.dc.a word_DROP
 	.dc.a word_QUIT
 
 prompt_code:
