@@ -46,17 +46,17 @@
 
 	.macro DEFWORD name namelen flags
 
-	.ifge \namelen - 8
+	.ifge \namelen - 7
 	.error "namelen is too large: \namelen"
 	.endif
-
-	.set _defword_head, .
 
 	.globl word_\name
 	.section .text
 
-	# name field
 	.align 8
+	.set _defword_head, .
+
+	# name field
 	.byte \namelen + \flags
 	.ascii "\name"
 
@@ -183,8 +183,8 @@ _create_link_field:
 #
 # ( addr1 u -- addr2 u )
 	DEFWORD "FIND", 4, 0x80
-	PPOP rax                 # body of name for searching
 	PPOP rbx                 # length of name for searching
+	PPOP rax                 # body of name for searching
 	mov rcx, r11             # current entry
 
 _find_loop:
@@ -197,22 +197,20 @@ _find_loop:
 	cmp rdx, rbx
 	jne _find_go_next_word
 
-	mov rdx, rcx
-	mov rsi, 0
-	add rdx, 1
-
-_find_name_equality:
-	mov dil, byte ptr [rdx + rsi]
-	mov bpl, byte ptr [rax + rsi]
-
-	cmp dil, bpl
-	jne _find_word_not_found
-
-	cmp rsi, rbx
-	jz _find_word_found
-
+	mov rsi, rcx
+	mov rdi, 0
 	add rsi, 1
 
+_find_name_equality:
+	mov bpl, byte ptr [rsi + rdi]
+	mov spl, byte ptr [rax + rdi]
+	add rdi, 1
+
+	cmp bpl, spl
+	jne _find_go_next_word
+
+	cmp rdi, rbx
+	jz _find_word_found
 	jmp _find_name_equality
 
 _find_go_next_word:
@@ -226,9 +224,13 @@ _find_go_next_word:
 	mov rsi, rdx
 	and rsi, 0x7
 	cmp rsi, 0
-	jz _find_loop
+	jz _find_update_latest_pointer
 
 	add rcx, 8
+	jmp _find_update_latest_pointer
+
+_find_update_latest_pointer:
+	mov rcx, qword ptr [rcx]
 	jmp _find_loop
 
 _find_word_found:
