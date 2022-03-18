@@ -127,20 +127,22 @@ word_\name:
 # create one dictionary entry
 # after creating entry, NP (r12) is set to its parameter field head.
 #
-# (flags name -- )
+# ( flags addr u -- )
 #
 #   flags: a flag byte for this entry
-#   name: a pointer to the name string ([64-bit len, ch0, ch1, ...])
+#   addr: a pointer to the body of name string
+#   u: length of name string
 #
 	DEFWORD "CREATE", 6, 0x8
 word_create:
-	PPOP rbx        # name
-	PPOP rax        # flags
+	PPOP rax    # length of name string
+	PPOP rbx    # body of name string
+	PPOP rcx    # flag byte
+
+	# TODO: check if `rax < 16` and rise an error if the check failed
 
 	# set a flag byte
-	mov rcx, qword ptr [rbx]
-	# TODO: check if `rcx < 16`
-	or al, cl       # assumes that cl is less than 16
+	or cl, al       # assumes that al is less than 16
 	mov rdx, 0
 	mov byte ptr [r12 + rdx], al
 	add rdx, 1
@@ -148,14 +150,14 @@ word_create:
 	# create name field
 _name_copy_loop:
 	add rdx, 1
-	cmp rcx, rdx
+	cmp rax, rdx
 	je _name_copy_end
 	mov sil, byte ptr [rbx + rdx]
 	mov byte ptr [r12 + rdx], sil
 	add rdx, 1
 	jmp _name_copy_loop
 _name_copy_end:
-	cmp rcx, 0x08
+	cmp rax, 0x08
 	jg _2qword_name
 	# 1qword name
 	add rdx, 0x08
