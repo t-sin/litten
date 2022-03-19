@@ -26,7 +26,7 @@ main_start:
 #   r15: Forth's instruction pointer (IP)
 #   r14: Return stack pointer (RSP)
 #   r13: Parameter stack pointer (SP)
-#   r12: Next dictionary entry (NP)
+#   r12: Next dictionary entry (HERE)
 #   r11: Latest dictionary entry (LATEST)
 #
 
@@ -34,7 +34,7 @@ main_start:
 	# .set IP,     r15
 	# .set RSP,    r14
 	# .set SP,     r13
-	# .set NP,     r12
+	# .set HERE,   r12
 	# .set LATEST, r11
 
 setup_system:

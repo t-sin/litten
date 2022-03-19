@@ -74,6 +74,14 @@ word_\name:
 
 ## Forth primitives
 
+# push an address of the next available dictionary entry
+#
+# ( -- addr )
+#
+	DEFWORD "HERE", 4, 0
+	PPUSH r12
+	NEXT
+
 # enter the execution of the colon definition following after this word.
 # IP is set to the address of head of code field of the colon definition
 # and push the address following after the colon definition as a return address.
@@ -126,7 +134,7 @@ word_\name:
 #
 
 # create one dictionary entry
-# after creating entry, NP (r12) is set to its parameter field head.
+# after creating entry, HARE (r12) is set to its parameter field head.
 #
 # ( flags addr u -- )
 #
