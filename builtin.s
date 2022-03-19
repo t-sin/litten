@@ -135,7 +135,6 @@ word_\name:
 #   u: length of name string
 #
 	DEFWORD "CREATE", 6, 0x80
-word_create:
 	PPOP rax    # length of name string
 	PPOP rbx    # body of name string
 	PPOP rcx    # flag byte
@@ -144,28 +143,26 @@ word_create:
 
 	# set a flag byte
 	or cl, al       # assumes that al is less than 16
+	mov byte ptr [r12], al
 	mov rdx, 0
-	mov byte ptr [r12 + rdx], al
-	add rdx, 1
+	mov rsi, 1
 
 	# create name field
 _name_copy_loop:
-	add rdx, 1
 	cmp rax, rdx
 	je _name_copy_end
-	mov sil, byte ptr [rbx + rdx]
-	mov byte ptr [r12 + rdx], sil
+	mov dil, byte ptr [rbx + rdx]
+	mov byte ptr [r12 + rsi], dil
 	add rdx, 1
+	add rsi, 1
 	jmp _name_copy_loop
 _name_copy_end:
-	cmp rax, 0x08
-	jg _2qword_name
-	# 1qword name
-	add rdx, 0x08
+	mov rdx, rsi
+	and rsi, 0x07
+	mov rbp, 8
+	sub rbp, rsi
+	add rdx, rbp
 	jmp _create_link_field
-_2qword_name:
-	add rdx, 0x0f
-
 _create_link_field:
 	# create link field
 	mov qword ptr [r12 + rdx], r11
