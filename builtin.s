@@ -266,6 +266,16 @@ _find_word_not_found:
 	PPUSH 0
 	NEXT
 
+# allocate u bytes in the lastest created dictionary entry.
+# r12 (HERE) is updated accordingly.
+#
+# ( u -- )
+#
+	DEFWORD "ALLOT", 5, 0
+	PPOP rax
+	add r12, rax
+	NEXT
+
 ##
 # stack manupilation
 #
