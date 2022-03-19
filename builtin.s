@@ -82,6 +82,14 @@ word_\name:
 	PPUSH r12
 	NEXT
 
+# push an address of the latest created dictionary entry
+#
+# ( -- addr )
+#
+	DEFWORD "LATEST", 5, 0
+	PPUSH r11
+	NEXT
+
 # enter the execution of the colon definition following after this word.
 # IP is set to the address of head of code field of the colon definition
 # and push the address following after the colon definition as a return address.
@@ -179,7 +187,6 @@ _create_link_field:
 	add r12, rdx
 
 	NEXT
-
 
 # find a word named addr1 with length u in the dictionary.
 # if such word is found, addr2 is the address of the code filed of the word
