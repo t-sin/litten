@@ -7,6 +7,11 @@
 ##
 # startup codes
 
+	.macro DOCOL codeptr
+	.dc.a word_DOCOL
+	.dc.a \codeptr
+	.endm
+
 	.macro PUTCH ch
 	.dc.a word_LIT
 	.dc.a \ch
@@ -17,8 +22,7 @@ main_code:
 	# create a word
 	.dc.a word_LIT
 	.dc.a 0
-	.dc.a word_DOCOL
-	.dc.a prompt_name_code
+	DOCOL prompt_name_code
 	.dc.a word_LIT
 	.dc.a '\n
 	.dc.a word_PARSE
@@ -27,16 +31,14 @@ main_code:
 	# create a word pt.2
 	.dc.a word_LIT
 	.dc.a 0
-	.dc.a word_DOCOL
-	.dc.a prompt_name_code
+	DOCOL prompt_name_code
 	.dc.a word_LIT
 	.dc.a '\n
 	.dc.a word_PARSE
 	.dc.a word_CREATE
 
 	# find word created above
-	.dc.a word_DOCOL
-	.dc.a prompt_name_code
+	DOCOL prompt_name_code
 	.dc.a word_LIT
 	.dc.a '\n
 	.dc.a word_PARSE
