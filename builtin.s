@@ -277,6 +277,51 @@ _find_word_not_found:
 	NEXT
 
 ##
+# memory manupilation
+#
+
+# store a qword into memory
+#
+# ( qword addr -- )
+#
+	DEFWORD "!", 1, "STORE", 0
+	PPOP rax
+	PPOP rbx
+	mov qword ptr [rax], rbx
+	NEXT
+
+# store a byte into memory
+#
+# ( byte addr -- )
+#
+	DEFWORD "C!", 2, "CSTORE", 0
+	PPOP rax
+	PPOP rbx
+	mov byte  ptr [rax], bl
+	NEXT
+
+# fetch a qword from memory
+#
+# ( addr - qword )
+#
+	DEFWORD "@", 1, "FETCH", 0
+	PPOP rax
+	mov rax, qword ptr [rax]
+	PPUSH rax
+	NEXT
+
+# fetch a byte from memory
+#
+# ( addr - byte )
+#
+	DEFWORD "C@", 1, "CFETCH", 0
+	PPOP rax
+	mov al, byte ptr [rax]
+	and rax, 0xff
+	PPUSH rax
+	NEXT
+
+##
 # stack manupilation
 #
 
