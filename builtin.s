@@ -322,7 +322,7 @@ _find_word_not_found:
 	NEXT
 
 
-# write one character to stdout
+# display a character
 #
 # ( u -- )
 #
@@ -339,7 +339,7 @@ _find_word_not_found:
 	call syscall_write
 	NEXT
 
-# write newline to stdout
+# display a newline
 #
 # ( -- )
 #
@@ -413,7 +413,7 @@ _parse_end:
 
 	NEXT
 
-# print string
+# display a string with length u
 #
 # ( addr u -- )
 #
