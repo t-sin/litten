@@ -44,13 +44,13 @@
 	.set defword_link, 0
 	.globl defword_link
 
-	.macro DEFWORD name namelen flags
+	.macro DEFWORD name namelen label flags
 
 	.ifge \namelen - 7
 	.error "namelen is too large: \namelen"
 	.endif
 
-	.globl word_\name
+	.globl word_\label
 	.section .text
 
 	.align 8
@@ -65,7 +65,7 @@
 	.dc.a defword_link
 	.set defword_link, _defword_head
 
-word_\name:
+word_\label:
 	.endm
 
 ##
@@ -78,7 +78,7 @@ word_\name:
 #
 # ( -- addr )
 #
-	DEFWORD "HERE", 4, 0
+	DEFWORD "HERE", 4, "HERE", 0
 	PPUSH r12
 	NEXT
 
@@ -86,7 +86,7 @@ word_\name:
 #
 # ( -- addr )
 #
-	DEFWORD "LATEST", 5, 0
+	DEFWORD "LATEST", 5, "LATEST", 0
 	PPUSH r11
 	NEXT
 
@@ -98,7 +98,7 @@ word_\name:
 #
 # R: ( -- addr )
 #
-	DEFWORD "DOCOL", 5, 0
+	DEFWORD "DOCOL", 5, "DOCOL", 0
 	mov rax, [r15]
 	add r15, 8
 	mov rbx, r15
@@ -111,7 +111,7 @@ word_\name:
 #
 # ( -- )
 #
-	DEFWORD "EXIT", 4, 0
+	DEFWORD "EXIT", 4, "EXIT", 0
 	RPOP r15
 	NEXT
 
@@ -121,7 +121,7 @@ word_\name:
 #
 # ( -- u )
 #
-	DEFWORD "LIT", 3, 0x80
+	DEFWORD "LIT", 3, "LIT", 0x80
 	mov rax, [r15]
 	add r15, 8
 	PPUSH rax
@@ -133,7 +133,7 @@ word_\name:
 #
 # ( -- )
 #
-	DEFWORD "QUIT", 4, 0
+	DEFWORD "QUIT", 4, "QUIT", 0
 	mov rax, 0
 	call syscall_exit
 
@@ -150,7 +150,7 @@ word_\name:
 #   addr: a pointer to the body of name string
 #   u: length of name string
 #
-	DEFWORD "CREATE", 6, 0x80
+	DEFWORD "CREATE", 6, "CREATE", 0x80
 	PPOP rax    # length of name string
 	PPOP rbx    # body of name string
 	PPOP rcx    # flag byte
@@ -194,7 +194,7 @@ _create_link_field:
 # if such word is not found, addr2 is addr1 and u is zero.
 #
 # ( addr1 u -- addr2 u )
-	DEFWORD "FIND", 4, 0x80
+	DEFWORD "FIND", 4, "FIND", 0x80
 	PPOP rbx                 # length of name for searching
 	PPOP rax                 # body of name for searching
 	mov rcx, r11             # current entry
@@ -271,7 +271,7 @@ _find_word_not_found:
 #
 # ( u -- )
 #
-	DEFWORD "ALLOT", 5, 0
+	DEFWORD "ALLOT", 5, "ALLOT", 0
 	PPOP rax
 	add r12, rax
 	NEXT
@@ -284,7 +284,7 @@ _find_word_not_found:
 #
 # ( v -- )
 #
-	DEFWORD "DROP", 4, 0
+	DEFWORD "DROP", 4, "DROP", 0
 	PPOP rax
 	NEXT
 
@@ -292,7 +292,7 @@ _find_word_not_found:
 #
 # ( v -- v v )
 #
-	DEFWORD "DUP", 3, 0
+	DEFWORD "DUP", 3, "DUP", 0
 	PPOP rax
 	PPUSH rax
 	PPUSH rax
@@ -308,7 +308,7 @@ _find_word_not_found:
 #
 #   u: a character read
 #
-	DEFWORD "KEY", 3, 0
+	DEFWORD "KEY", 3, "KEY", 0
 	mov rax, 0                         # 0 is for stdin
 	lea rbx, input_buffer
 	mov rdx, 0
@@ -328,7 +328,7 @@ _find_word_not_found:
 #
 #   u: a character to output
 #
-	DEFWORD "EMIT", 4, 0
+	DEFWORD "EMIT", 4, "EMIT", 0
 	PPOP rax
 	lea rbx, output_buffer
 	mov rdx, [output_start]
@@ -343,7 +343,7 @@ _find_word_not_found:
 #
 # ( -- )
 #
-	DEFWORD "NL", 2, 0
+	DEFWORD "NL", 2, "NL", 0
 	mov al, 0x0a
 	lea rbx, output_buffer
 	mov rdx, [output_start]
@@ -361,7 +361,7 @@ _find_word_not_found:
 #   u: a delimiter character
 #   addr: a pointer to string read
 #
-	DEFWORD "PARSE", 5, 0x80
+	DEFWORD "PARSE", 5, "PARSE", 0x80
 	mov r8, qword ptr [input_start]   # start position of input
 	mov r9, 0                         # all num read
 	PPOP r10                          # delimiter
@@ -417,7 +417,7 @@ _parse_end:
 #
 # ( addr u -- )
 #
-	DEFWORD "PRINT", 5, 0x80
+	DEFWORD "PRINT", 5, "PRINT", 0x80
 	PPOP rax        # length of string
 	PPOP rbx        # body of string
 	mov rcx, 0      # output count
