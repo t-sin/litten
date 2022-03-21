@@ -7,6 +7,10 @@
 ##
 # startup codes
 
+	.macro WORD name
+	.dc.a word_\name
+	.endm
+
 	.macro LIT val
 	.dc.a word_LIT
 	.dc.a \val
@@ -27,24 +31,24 @@ main_code:
 	LIT 0
 	DOCOL prompt_name_code
 	LIT '\n
-	.dc.a word_PARSE
-	.dc.a word_CREATE
+	WORD PARSE
+	WORD CREATE
 
 	# create a word pt.2
 	LIT 0
 	DOCOL prompt_name_code
 	LIT '\n
-	.dc.a word_PARSE
-	.dc.a word_CREATE
+	WORD PARSE
+	WORD CREATE
 
 	# find word created above
 	DOCOL prompt_name_code
 	LIT '\n
-	.dc.a word_PARSE
-	.dc.a word_FIND
-	.dc.a word_DROP
-	.dc.a word_DROP
-	.dc.a word_QUIT
+	WORD PARSE
+	WORD FIND
+	WORD DROP
+	WORD DROP
+	WORD QUIT
 
 prompt_name_code:
 	PUTCH 'n
@@ -53,4 +57,4 @@ prompt_name_code:
 	PUTCH 'e
 	PUTCH '?
 	PUTCH ' 
-	.dc.a word_EXIT
+	WORD EXIT
