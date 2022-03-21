@@ -27,27 +27,10 @@
 	.endm
 
 main_code:
-	# create a word
-	LIT 0
-	DOCOL prompt_name_code
-	LIT '\n
-	WORD PARSE
-	WORD CREATE
-
-	# create a word pt.2
-	LIT 0
-	DOCOL prompt_name_code
-	LIT '\n
-	WORD PARSE
-	WORD CREATE
-
-	# find word created above
-	DOCOL prompt_name_code
-	LIT '\n
-	WORD PARSE
-	WORD FIND
-	WORD DROP
-	WORD DROP
+	WORD RECV
+	WORD IS
+	WORD NUM_IS
+	WORD PRINT
 	WORD QUIT
 
 prompt_name_code:

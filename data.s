@@ -11,10 +11,10 @@
 	.globl dict_start
 	.globl dict_size
 
-	.globl input_len
-	.globl input_start
-	.globl input_buffer
-	.globl input_buffer_size
+	.globl input_stream_offset
+	.globl input_stream_count
+	.globl input_stream
+	.globl input_stream_size
 
 	.globl output_len
 	.globl output_start
@@ -24,15 +24,15 @@
 	.data
 
 ##
-# input line buffer
+# input stream (a ring buffer)
 #
-input_start:
-	.dc.a 0
-input_len:
-	.skip 8
-input_buffer:
+input_stream_offset:
+	.dc.l 0
+input_stream_count:
+	.dc.l 0
+input_stream:
 	.skip 2048
-input_buffer_size = . - input_buffer
+input_stream_size = . - input_stream
 
 ##
 # output buffer

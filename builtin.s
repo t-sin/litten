@@ -344,28 +344,135 @@ _find_word_not_found:
 	NEXT
 
 ##
-# I/O words
-#
+# I/O primitives
 
-# read one character from stdin
+# peek a character from the input stream
+# push zero if the input stream is empty
 #
 # ( -- u )
 #
-#   u: a character read
-#
-	DEFWORD "KEY", 3, "KEY", 0
-	mov rax, 0                         # 0 is for stdin
-	lea rbx, input_buffer
-	mov rdx, 0
-	mov dx, word ptr [input_start]
-	add rbx, rdx
-	mov rcx, 1
-	call syscall_read
+	DEFWORD "PEEK", 4, "PEEK", 0
 	mov rax, 0
-	mov al, [rbx]
+	mov rbx, 0
+	mov eax, dword ptr [input_stream_count]
+	cmp eax, 0
+	je _peek_char
+_peek_empty_input:
+	mov rax, 0
+	PPUSH rax
+	NEXT
+_peek_char:
+	lea rax, input_stream
+	mov rbx, 0
+	mov ebx, dword ptr [input_stream_offset]
+	add rax, rbx
+	mov al, byte ptr [rax]
+	and al, 0xff
 	PPUSH rax
 	NEXT
 
+# get a number of available characters in the input stream
+#
+# ( -- u )
+#
+	DEFWORD "#IS", 3, "NUM_IS", 0
+	mov rax, 0
+	mov eax, dword ptr [input_stream_count]
+	PPUSH rax
+	NEXT
+
+	DEFWORD "IS", 2, "IS", 0
+	lea rax, input_stream
+	PPUSH rax
+	NEXT
+
+# go to next character in the input stream
+# this word don't check wheather the character count is zero
+#
+# ( -- )
+#
+	DEFWORD "NEXT", 4, "NEXT", 0
+	# next head address of available characters
+	lea rax, input_stream
+	mov rbx, 0
+	mov ebx, dword ptr [input_stream_offset]
+	add rbx, 1
+	add rax, rbx
+	# maximum address for characters in the input stream
+	mov rcx, offset input_stream_size
+	add rcx, -1
+	# update offset: note that the input stream is a ring buffer
+	cmp rax, rcx
+	jg _next_wrap_offset
+	jmp _next_update_offset
+_next_wrap_offset:
+	mov rbx, 0
+_next_update_offset:
+	mov dword ptr [input_stream_offset], ebx
+	NEXT
+
+# recieve characters from stdin
+#
+# ( -- u )
+#
+#   u: result status. 0 when succeeded, -1 when failed
+#
+	DEFWORD "RECV", 4, "RECV", 0
+	# calculate a number of bytes to the edge of the ring buffer
+	mov rdx, 0
+	mov edx, dword ptr [input_stream_offset]
+	mov rsi, offset input_stream_size
+	sub rsi, 1
+	sub rsi, rdx
+	# read chars to the edge of the ring buffer
+	mov rax, 0               # 0 is for stdin
+	lea rbx, input_stream
+	add rbx, rdx             # start address to copy
+	mov rcx, rsi             # number of character to read
+	call syscall_read
+
+	cmp rax, 0
+	jge _recv_first_read_succeeded
+	jmp _recv_failed
+
+_recv_first_read_succeeded:
+	# temporary store a number of read at fisrt time
+	mov rdi, rax
+
+	# end of receiving if num read is less than num byte to the edge
+	cmp rax, rsi
+	jl _recv_end
+
+	# calculate a number of bytes to the head of the ring buffer
+	sub rdx, 1
+
+	cmp rdx, 0
+	je _recv_end
+
+	# read chars from the head of stream to the previous byte of offset
+	mov rax, 0               # 0 is for stdin
+	lea rbx, input_stream    # start address to copy
+	mov rcx, rdx             # number of character to read
+	call syscall_read
+
+	cmp rax, 0
+	jl _recv_failed
+
+	add rdi, rax
+	jmp _recv_end
+
+_recv_failed:
+	PPUSH -1
+	NEXT
+
+_recv_end:
+	mov rax, 0
+	mov eax, dword ptr [input_stream_count]
+	add rax, rdi
+	mov dword ptr [input_stream_count], eax
+	mov rax, 0
+	PPUSH rax
+	NEXT
 
 # display a character
 #
@@ -397,65 +504,6 @@ _find_word_not_found:
 	mov rax, 1                         # 1 is for stdout
 	mov rcx, 1
 	call syscall_write
-	NEXT
-
-# read one name from stdin
-#
-# ( u -- addr u)
-#
-#   u: a delimiter character
-#   addr: a pointer to string read
-#
-	DEFWORD "PARSE", 5, "PARSE", 0x80
-	mov r8, qword ptr [input_start]   # start position of input
-	mov r9, 0                         # all num read
-	PPOP r10                          # delimiter
-
-_parse_read:
-	mov rax, 0                          # stdin
-	mov rcx, offset input_buffer_size   # num input
-	mov rbx, offset input_buffer
-	add rbx, r8
-	call syscall_read
-
-	cmp rax, 0
-	jle _parse_read
-	jg _parse_read_ok
-
-_parse_read_ok:
-	mov rcx, 0     # num read in _parse_loop
-
-_parse_loop:
-	mov dil, byte ptr [rbx + rcx]
-	add rcx, 1
-	add r9, 1
-
-	cmp r9, offset input_buffer_size
-	jge _parse_reaches_buffer_max
-	jmp _parse_loop_cond
-
-_parse_reaches_buffer_max:
-	# TODO: handle error
-
-_parse_loop_cond:
-	cmp dil, r10b  # is a character read the delimiter?
-	je _parse_end
-
-	cmp rcx, rax
-	je _parse_reread
-	jmp _parse_loop
-
-_parse_reread:
-	add r9, rcx
-	mov r8, r9
-	jmp _parse_read
-
-_parse_end:
-	add r9, -1
-	mov rax, offset input_buffer
-	PPUSH rax
-	PPUSH r9
-
 	NEXT
 
 # display a string with length u
