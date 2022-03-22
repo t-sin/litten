@@ -87,7 +87,7 @@ defword_\label:
 #
 	.macro REDEF name label flags
 	DEFWORD "\name", "\label", \flags
-	C_PRM \label
+	CMP_P \label
 	ENDDEF
 	.endm
 
