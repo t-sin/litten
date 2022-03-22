@@ -22,8 +22,13 @@
 	.dc.a \codeptr
 	.endm
 
-	.macro COMPILE val
+	.macro CMP_L val
 	LIT \val
+	PRIMITIVE COMMA
+	.endm
+
+	.macro CMP_P label
+	LIT primitive_\label
 	PRIMITIVE COMMA
 	.endm
 
@@ -57,25 +62,25 @@ defword_\label:
 # word-defining macro example
 #
 #	DEFWORD "FOUR", "FOUR", 0
-#	COMPILE word_LIT
-#	COMPILE 4
-#	COMPILE word_EXIT
+#	CMP_P LIT
+#	CMP_L 4
+#	CMP_P EXIT
 #	ENDDEF
 #
 # initialize:
 #	DOCOL defword_FOUR
-#	WORD EXIT
+#	PRIMITIVE EXIT
 #
 # main_code:
 #	DOCOL initialize
 #	LIT word_FOUR
 #	LIT word_FOUR_namelen
-#	WORD FIND
-#	WORD DROP
-#	WORD TO_BODY
-#	WORD EXEC
-#	WORD DUP
-#	WORD QUIT
+#	PRIMITIVE FIND
+#	PRIMITIVE DROP
+#	PRIMITIVE TO_BODY
+#	PRIMITIVE EXEC
+#	PRIMITIVE DUP
+#	PRIMITIVE QUIT
 #
 
 ##
