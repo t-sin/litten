@@ -106,6 +106,15 @@ word_\label:
 	mov r15, rax
 	NEXT
 
+# execute the word placed `addr`
+#
+# ( i * x addr -- j * x )
+#
+	DEFWORD "EXEC", 4, "EXEC", 0
+	RPUSH r15
+	PPOP rax
+	mov r15, rax
+	NEXT
 
 # progress IP at the end of colon-defined words
 #
@@ -273,6 +282,32 @@ _find_word_not_found:
 	PPUSH 0
 	NEXT
 
+# calculate an address of the code field
+#
+# ( addr1 -- addr2 )
+#
+#   addr1: the head address of the dictionary entry
+#   addr2: an address of its code field
+#
+	DEFWORD ">BODY", 5, "TO_BODY", 0
+	PPOP rax
+	# skip name filed
+	mov rbx, 0
+	mov rcx, 0
+	mov bl, byte ptr [rax]
+	mov cl, bl
+	and bl, 0x08
+	add rax, rbx
+	and cl, 0x07
+	cmp cl, 0
+	je _to_body_end
+	add rax, 8
+_to_body_end:
+	# skip link field
+	add rax, 8
+	PPUSH rax
+	NEXT
+
 # allocate u bytes in the lastest created dictionary entry.
 # r12 (HERE) is updated accordingly.
 #
@@ -281,6 +316,16 @@ _find_word_not_found:
 	DEFWORD "ALLOT", 5, "ALLOT", 0
 	PPOP rax
 	add r12, rax
+	NEXT
+
+# ALLOT space for qword then store qword at `HERE 8 -`
+#
+# ( qword -- )
+#
+	DEFWORD ",", 1, "COMMA", 0
+	PPOP rax
+	mov qword ptr [r12], rax
+	add r12, 8
 	NEXT
 
 ##
