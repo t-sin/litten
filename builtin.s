@@ -157,6 +157,12 @@ word_\label:
 
 	# TODO: check if `rax < 16` and rise an error if the check failed
 
+	# 8-byte align
+	add r12, 8
+	mov rdx, 0x07
+	not rdx
+	and r12, rdx
+
 	# set a flag byte
 	or cl, al       # assumes that al is less than 16
 	mov byte ptr [r12], al
