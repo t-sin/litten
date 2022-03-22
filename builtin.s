@@ -344,7 +344,8 @@ _find_word_not_found:
 	NEXT
 
 ##
-# I/O primitives
+# text input primitives
+#
 
 # peek a character from the input stream
 # push zero if the input stream is empty
@@ -473,6 +474,10 @@ _recv_end:
 	mov rax, 0
 	PPUSH rax
 	NEXT
+
+##
+# text output primitives
+#
 
 # display a character
 #
