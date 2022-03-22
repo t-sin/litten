@@ -325,15 +325,14 @@ _find_go_next_word:
 	# check the name field length to calculate its link field
 	# 4 bit or higher denotes a number of qwords
 	mov rsi, rdx
-	and rsi, 0xf8
-	add rcx, rsi             # progress some qword
+	and rsi, 0x08
+	add rcx, rsi
 
 	# lowest 3 bits denotes a modulo devided by 8
 	mov rsi, rdx
-	and rsi, 0x7
+	and rsi, 0x07
 	cmp rsi, 0
-	jz _find_update_latest_pointer
-
+	je _find_update_latest_pointer
 	add rcx, 8
 	jmp _find_update_latest_pointer
 
