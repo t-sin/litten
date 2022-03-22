@@ -138,36 +138,32 @@ primitive_\label:
 	PPUSH rax
 	NEXT
 
-# branch to the word specified u.
+##
+# branching-related words
+#
+
+# branch to the word specified `u` a qword following this word.
 # if u is positive, it branch forward.
 # if u is negative, it branch backward.
 # if u is zero, this word has no effect.
 #
-# ( u -- )
+# ( -- )
 #
 	DEFWORD "B", 1, "B", 0x00
-	PPOP rax
-	shl rax, 3    # each word addresses is 8 bytes
-	add r15, rax
-	mov rax, qword ptr [r15]
-	add r15, 8
-	jmp rax
+	mov rax, [r15]
+	mov r15, rax
 
 # conditional branching.
-# branch to the word specified u only if bool is non-zero
+# branch to the word specified u a qword following this word only if bool is non-zero
 #
-# ( u bool -- )
+# ( bool -- )
 #
 	DEFWORD "BZ", 1, "BZ", 0x00
 	PPOP rax
-	PPOP rbx
 	cmp rax, 0
 	je _bz_no_branching
-	shl rbx, 3    # each word addresses is 8 bytes
-	add r15, rbx
-	mov rax, qword ptr [r15]
-	add r15, 8
-	jmp rax
+	mov rax, [r15]
+	mov r15, rax
 _bz_no_branching:
 	NEXT
 
