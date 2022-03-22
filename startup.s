@@ -62,6 +62,15 @@ defword_\label:
 	DOCOL defword_\label
 	.endm
 
+	.macro EXECUTE label
+	LIT word_\label
+	LIT word_\label\()_namelen
+	PRIMITIVE FIND
+	PRIMITIVE DROP
+	PRIMITIVE TO_BODY
+	PRIMITIVE EXEC
+	.endm
+
 ##
 # word-defining macro example
 #
@@ -77,13 +86,8 @@ defword_\label:
 #
 # main_code:
 #	DOCOL initialize
-#	LIT word_FOUR
-#	LIT word_FOUR_namelen
-#	PRIMITIVE FIND
-#	PRIMITIVE DROP
-#	PRIMITIVE TO_BODY
-#	PRIMITIVE EXEC
-#	PRIMITIVE DUP
+#	EXECUTE FOUR
+#	PRIMITIVE EMIT
 #	PRIMITIVE QUIT
 #
 
