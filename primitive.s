@@ -430,6 +430,17 @@ _to_body_end:
 	PPUSH rax
 	NEXT
 
+# swap two values on the top of pstack
+#
+# ( a b -- b a )
+#
+	DEFWORD "SWAP", 4, "SWAP", 0
+	PPOP rax
+	PPOP rbx
+	PPUSH rbx
+	PPUSH rax
+	NEXT
+
 ##
 # text input primitives
 #
