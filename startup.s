@@ -58,6 +58,10 @@ defword_\label:
 	PRIMITIVE EXIT
 	.endm
 
+	.macro DEFINE label
+	DOCOL defword_\label
+	.endm
+
 ##
 # word-defining macro example
 #
@@ -68,7 +72,7 @@ defword_\label:
 #	ENDDEF
 #
 # initialize:
-#	DOCOL defword_FOUR
+#	DEFINE FOUR
 #	PRIMITIVE EXIT
 #
 # main_code:
