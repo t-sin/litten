@@ -245,9 +245,12 @@ _bz_end:
 
 	# 8-byte align
 	add r12, 8
-	mov rdx, 0x07
-	not rdx
-	and r12, rdx
+	mov rdx, r12
+	mov rsi, 0x07
+	and rdx, rsi
+	mov rsi, 8
+	sub rsi, rdx
+	add r12, rsi
 
 	# set a flag byte
 	or cl, al       # assumes that al is less than 16

@@ -71,6 +71,15 @@ defword_\label:
 	PRIMITIVE EXEC
 	.endm
 
+	.macro CMP_E label
+	CMP_L word_\label
+	CMP_L word_\label\()_namelen
+	CMP_P FIND
+	CMP_P DROP
+	CMP_P TO_BODY
+	CMP_P EXEC
+	.endm
+
 ##
 # word-defining macro example
 #
@@ -118,6 +127,46 @@ export_primitives:
 # built-in words
 #
 
+# start to branch conditionally. this word is available in compiler mode.
+#
+# C: ( bool -- )
+#
+	DEFWORD "IF", "IF", 0x80
+	CMP_P BZ
+	PRIMITIVE FW_MARK
+	ENDDEF
+
+# introduce an else clause to IF. this word is available in compiler mode.
+#
+# C: ( addr -- addr )
+#
+	DEFWORD "ELSE", "ELSE", 0x80
+	PRIMITIVE FW_MARK
+	PRIMITIVE FW_RESOLVE
+	ENDDEF
+
+# terminate IF with catch branching. this word is available in compiler mode.
+#
+# C: ( addr -- )
+#
+	DEFWORD "THEN", "THEN", 0x80
+	PRIMITIVE FW_RESOLVE
+	ENDDEF
+
+# a word for testing IF ~ ELSE ~ THEN
+# ( u -- )
+	DEFWORD "EMIT_ZNZ", "EMIT_ZNZ", 0x00
+	EXECUTE IF
+	CMP_L 'z
+	CMP_E EMIT
+	EXECUTE ELSE
+	CMP_L 'n
+	CMP_E EMIT
+	CMP_L 'z
+	CMP_E EMIT
+	EXECUTE THEN
+	ENDDEF
+
 # read one token delimited with `char`
 #
 # ( char -- addr )
@@ -132,17 +181,15 @@ export_primitives:
 ##
 # startup codes
 
-initialize:
-	DOCOL defword_WORD
-	LIT 'b
-	PRIMITIVE DUP
-	PRIMITIVE EMIT
-	LIT 1
-	PRIMITIVE SUB
-	PRIMITIVE EMIT
+setup_builtins:
+#	DOCOL defword_WORD
+	DEFINE IF
+	DEFINE ELSE
+	DEFINE THEN
 	PRIMITIVE EXIT
 
 main_code:
 	DOCOL export_primitives
-	DOCOL initialize
+	DOCOL setup_builtins
+	EXECUTE EMIT_ZNZ
 	PRIMITIVE QUIT
