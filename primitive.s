@@ -529,6 +529,24 @@ _recv_end:
 	PPUSH rax
 	NEXT
 
+# get an address of the line buffer
+#
+# ( -- addr )
+#
+	DEFWORD ">IB", 3, "TO_IB", 0
+	lea rax, line_buffer
+	PPUSH rax
+	NEXT
+
+# get an address of a variable to count the contents of line buffer
+#
+# ( -- addr )
+#
+	DEFWORD "#IB", 3, "NUMIB", 0
+	lea rax, line_buffer_count
+	PPUSH rax
+	NEXT
+
 ##
 # text output primitives
 #
