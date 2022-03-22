@@ -142,6 +142,51 @@ primitive_\label:
 # branching-related words
 #
 
+# mark here is the source address of forward branching,
+# by pushing an address at here to pstack.
+#
+# tipically use like this: B >MARK ... >RESOLVE
+#
+# ( -- addr )
+#
+	DEFWORD ">MARK", 5, "FW_MARK", 0x80
+	PPUSH r12
+	mov rax, 0
+	mov qword ptr [r12], rax
+	add r12, 8
+	NEXT
+
+# resolve marked empty address for forward branching.
+#
+# ( addr -- )
+#
+	DEFWORD ">RES", 4, "FW_RESOLVE", 0x80
+	PPOP rax
+	mov qword ptr [rax], r12
+	NEXT
+
+# mark here is the destination address of backward branching,
+# by pushing an address at here to pstack.
+#
+# tipically use like this: <MARK ... B <RESOLVE
+#
+# ( -- addr )
+#
+	DEFWORD "<MARK", 5, "BW_MARK", 0x80
+	PPUSH r12
+	mov rax, 0
+	NEXT
+
+# resolve marked empty address for backward branching.
+#
+# ( addr -- )
+#
+	DEFWORD "<RES", 4, "BW_RESOLVE", 0x80
+	PPOP rax
+	mov qword ptr [r12], rax
+	add r12, 8
+	NEXT
+
 # branch to the word specified `u` a qword following this word.
 # if u is positive, it branch forward.
 # if u is negative, it branch backward.
