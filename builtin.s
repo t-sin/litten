@@ -142,7 +142,7 @@ word_\label:
 #
 
 # create one dictionary entry
-# after creating entry, HARE (r12) is set to its parameter field head.
+# after creating entry, HERE (r12) is set to its parameter field head.
 #
 # ( flags addr u -- )
 #
@@ -184,6 +184,7 @@ _create_link_field:
 	mov qword ptr [r12 + rdx], r11
 	add rdx, 8
 	mov r11, r12
+	# set HERE to the data field of this word
 	add r12, rdx
 
 	NEXT
