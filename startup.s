@@ -155,7 +155,7 @@ export_primitives:
 
 # a word for testing IF ~ ELSE ~ THEN
 # ( u -- )
-	DEFWORD "EMIT_ZNZ", "EMIT_ZNZ", 0x00
+	DEFWORD "EMITZNZ", "EMITZNZ", 0x00
 	EXECUTE IF
 	CMP_L 'z
 	CMP_E EMIT
@@ -165,6 +165,7 @@ export_primitives:
 	CMP_L 'z
 	CMP_E EMIT
 	EXECUTE THEN
+	CMP_P EXIT
 	ENDDEF
 
 # read one token delimited with `char`
@@ -191,5 +192,6 @@ setup_builtins:
 main_code:
 	DOCOL export_primitives
 	DOCOL setup_builtins
-	EXECUTE EMIT_ZNZ
+	DEFINE EMITZNZ
+	EXECUTE EMITZNZ
 	PRIMITIVE QUIT
