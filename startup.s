@@ -107,6 +107,42 @@ export_primitives:
 	PRIMITIVE EXIT
 
 ##
+# built-in words
+#
+
+# read one token delimited with `char`
+#
+# ( char -- addr )
+#
+#   char: a delimiter character
+#   addr: a pointer to string read formatted as bytes: [len ch0 ch1 ...]
+#
+
+	DEFWORD "WORD", "WORD", 0x00
+	# if #IS != 0...
+	CMP_P NUM_IS
+	CMP_L 0
+	CMP_P EQ
+	CMP_P NOT
+	# then skip RECV (jump to nn)
+	CMP_L nn
+	CMP_P SWAP
+	CMP_P BZ
+	# receive text into the input stream
+	CMP_P RECV   # <- $01
+	# if RESV failed...
+	CMP_L 0
+	CMP_P EQ
+	CMP_P NOT
+	# then retry receiving (jump to $01)
+	CMP_L xx
+	CMP_P SWAP
+	CMP_P BZ
+	# なんかまた機械語…
+	# つら…
+	ENDDEF
+
+##
 # startup codes
 
 initialize:
