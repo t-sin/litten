@@ -42,7 +42,8 @@ setup_system:
 	lea r14, rstack_bottom
 	lea r13, pstack_bottom
 	lea r12, dict_start
-	lea r11, defword_link
+#	lea r11, defword_link
+	mov r11, 0
 	ret
 
 # Forth's toplevel inner interpreter
