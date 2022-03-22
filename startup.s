@@ -5,7 +5,8 @@
 	.data
 
 ##
-# startup codes
+# convinient macros to define code
+#
 
 	.macro WORD name
 	.dc.a word_\name
@@ -25,6 +26,10 @@
 	LIT \ch
 	.dc.a word_EMIT
 	.endm
+
+##
+# startup codes
+
 
 main_code:
 	WORD RECV
