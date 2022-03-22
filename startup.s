@@ -82,6 +82,12 @@ defword_\label:
 # startup codes
 
 initialize:
+	LIT 'y
+	WORD EMIT
+	LIT 2
+	WORD B
+	LIT 'n
+	WORD EMIT
 	WORD EXIT
 
 main_code:

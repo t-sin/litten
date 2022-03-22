@@ -138,6 +138,39 @@ word_\label:
 	PPUSH rax
 	NEXT
 
+# branch to the word specified u.
+# if u is positive, it branch forward.
+# if u is negative, it branch backward.
+# if u is zero, this word has no effect.
+#
+# ( u -- )
+#
+	DEFWORD "B", 1, "B", 0x00
+	PPOP rax
+	shl rax, 3    # each word addresses is 8 bytes
+	add r15, rax
+	mov rax, qword ptr [r15]
+	add r15, 8
+	jmp rax
+
+# conditional branching.
+# branch to the word specified u only if bool is non-zero
+#
+# ( u bool -- )
+#
+	DEFWORD "BZ", 1, "BZ", 0x00
+	PPOP rax
+	PPOP rbx
+	cmp rax, 0
+	je _bz_no_branching
+	shl rbx, 3    # each word addresses is 8 bytes
+	add r15, rbx
+	mov rax, qword ptr [r15]
+	add r15, 8
+	jmp rax
+_bz_no_branching:
+	NEXT
+
 ## system words
 
 # exit litten system with status code 0
