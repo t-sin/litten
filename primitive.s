@@ -641,3 +641,56 @@ _copy_str_loop:
 	call syscall_write
 
 	NEXT
+
+##
+# numeric operations
+#
+
+# test a numeric equality
+#
+# ( n1 n2 -- bool )
+#
+	DEFWORD "=", 1, "EQ", 0x00
+	PPOP rax
+	PPOP rbx
+	cmp rax, rbx
+	jne _eq_not_equal
+	mov rax, 1
+	jmp _eq_end
+_eq_not_equal:
+	mov rax, 0
+_eq_end:
+	PPUSH rax
+	NEXT
+
+# invert a bool value
+#
+# ( bool1 -- bool2 )
+#
+	DEFWORD "NOT", 3, "NOT", 0x00
+	PPOP rax
+	not rax
+	PPUSH rax
+	NEXT
+
+# addition
+#
+# ( n1 n2 -- n3 )
+#
+	DEFWORD "+", 1, "ADD", 0x00
+	PPOP rbx
+	PPOP rax
+	add rax, rbx
+	PPUSH rax
+	NEXT
+
+# substruction
+#
+# ( n1 n2 -- n3 )
+#
+	DEFWORD "-", 1, "SUB", 0x00
+	PPOP rbx
+	PPOP rax
+	sub rax, rbx
+	PPUSH rax
+	NEXT
