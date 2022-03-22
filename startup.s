@@ -32,31 +32,48 @@
 	.dc.a word_EMIT
 	.endm
 
+# define a code defining word named by `name`
+# when DOCOL a label create by this macro `defword_\label,
+# CREATE and COMPILE a word behaved as the code between DEFWORD and ENDDEF at run-time.
+#
+	.macro DEFWORD name label flags
+	.align 8
+word_\label:
+	.ascii "\name"
+	.set word_\label\()_namelen, . - word_\label
+	.align 8
+defword_\label:
+	LIT \flags
+	LIT word_\label
+	LIT word_\label\()_namelen
+	WORD CREATE
+	.endm
+
+	.macro ENDDEF
+	WORD EXIT
+	.endm
+
 ##
 # second stage words defined in startup code
 #
 
-word_name_FOUR:
-	.align 8
-	.ascii "FOUR"
-define_word_FOUR:
-	.align 8
-	LIT 0
-	LIT word_name_FOUR
-	LIT 4
-	WORD CREATE
+	DEFWORD "FOUR", "FOUR", 0
 	COMPILE word_LIT
 	COMPILE 4
 	COMPILE word_EXIT
-	WORD EXIT
+	ENDDEF
 
 ##
 # startup codes
 
+initialize:
+	DOCOL defword_FOUR
+	WORD EXIT
+
 main_code:
-	DOCOL define_word_FOUR
-	LIT word_name_FOUR
-	LIT 4
+	DOCOL initialize
+	LIT word_FOUR
+	LIT word_FOUR_namelen
 	WORD FIND
 	WORD DROP
 	WORD TO_BODY
