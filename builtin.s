@@ -69,10 +69,8 @@ word_\label:
 	.endm
 
 ##
-# built-in words
+# accessing FORTH states
 #
-
-## Forth primitives
 
 # push an address of the next available dictionary entry
 #
@@ -89,6 +87,10 @@ word_\label:
 	DEFWORD "LATEST", 5, "LATEST", 0
 	PPUSH r11
 	NEXT
+
+##
+# Forth primitives
+#
 
 # enter the execution of the colon definition following after this word.
 # IP is set to the address of head of code field of the colon definition
