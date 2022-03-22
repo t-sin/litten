@@ -54,29 +54,36 @@ defword_\label:
 	.endm
 
 ##
-# second stage words defined in startup code
+# word-defining macro example
 #
-
-	DEFWORD "FOUR", "FOUR", 0
-	COMPILE word_LIT
-	COMPILE 4
-	COMPILE word_EXIT
-	ENDDEF
+#	DEFWORD "FOUR", "FOUR", 0
+#	COMPILE word_LIT
+#	COMPILE 4
+#	COMPILE word_EXIT
+#	ENDDEF
+#
+# initialize:
+#	DOCOL defword_FOUR
+#	WORD EXIT
+#
+# main_code:
+#	DOCOL initialize
+#	LIT word_FOUR
+#	LIT word_FOUR_namelen
+#	WORD FIND
+#	WORD DROP
+#	WORD TO_BODY
+#	WORD EXEC
+#	WORD DUP
+#	WORD QUIT
+#
 
 ##
 # startup codes
 
 initialize:
-	DOCOL defword_FOUR
 	WORD EXIT
 
 main_code:
 	DOCOL initialize
-	LIT word_FOUR
-	LIT word_FOUR_namelen
-	WORD FIND
-	WORD DROP
-	WORD TO_BODY
-	WORD EXEC
-	WORD DUP
 	WORD QUIT
