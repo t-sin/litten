@@ -8,28 +8,28 @@
 # convinient macros to define code
 #
 
-	.macro WORD name
-	.dc.a word_\name
+	.macro PRIMITIVE label
+	.dc.a primitive_\label
 	.endm
 
 	.macro LIT val
-	.dc.a word_LIT
+	PRIMITIVE LIT
 	.dc.a \val
 	.endm
 
 	.macro DOCOL codeptr
-	.dc.a word_DOCOL
+	PRIMITIVE DOCOL
 	.dc.a \codeptr
 	.endm
 
 	.macro COMPILE val
 	LIT \val
-	WORD COMMA
+	PRIMITIVE COMMA
 	.endm
 
 	.macro PUTCH ch
 	LIT \ch
-	.dc.a word_EMIT
+	PRIMITIVE EMIT
 	.endm
 
 # define a code defining word named by `name`
@@ -46,11 +46,11 @@ defword_\label:
 	LIT \flags
 	LIT word_\label
 	LIT word_\label\()_namelen
-	WORD CREATE
+	PRIMITIVE CREATE
 	.endm
 
 	.macro ENDDEF
-	WORD EXIT
+	PRIMITIVE EXIT
 	.endm
 
 ##
@@ -82,14 +82,15 @@ defword_\label:
 # startup codes
 
 initialize:
-	LIT 'y
-	WORD EMIT
-	LIT 2
-	WORD B
-	LIT 'n
-	WORD EMIT
-	WORD EXIT
+	DOCOL defword_WORD
+	LIT 'b
+	PRIMITIVE DUP
+	PRIMITIVE EMIT
+	LIT 1
+	PRIMITIVE SUB
+	PRIMITIVE EMIT
+	PRIMITIVE EXIT
 
 main_code:
 	DOCOL initialize
-	WORD QUIT
+	PRIMITIVE QUIT

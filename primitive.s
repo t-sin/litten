@@ -50,7 +50,7 @@
 	.error "namelen is too large: \namelen"
 	.endif
 
-	.globl word_\label
+	.globl primitive_\label
 	.section .text
 
 	.align 8
@@ -65,7 +65,7 @@
 	.dc.a defword_link
 	.set defword_link, _defword_head
 
-word_\label:
+primitive_\label:
 	.endm
 
 ##
