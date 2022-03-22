@@ -83,6 +83,29 @@ defword_\label:
 #	PRIMITIVE QUIT
 #
 
+# redefine primitives as words
+#
+	.macro REDEF name label flags
+	DEFWORD "\name", "\label", \flags
+	C_PRM \label
+	ENDDEF
+	.endm
+
+# export a pirimitive by setting up
+# to hide dengerous primitives in the primitive dictionary
+#
+	.macro EXPORT label
+	DOCOL defword_\label
+	.endm
+
+	REDEF "EMIT", "EMIT", 0x00
+	REDEF "=", "EQ", 0x00
+
+export_primitives:
+	EXPORT EMIT
+	EXPORT EQ
+	PRIMITIVE EXIT
+
 ##
 # startup codes
 
@@ -97,5 +120,6 @@ initialize:
 	PRIMITIVE EXIT
 
 main_code:
+	DOCOL export_primitives
 	DOCOL initialize
 	PRIMITIVE QUIT
