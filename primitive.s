@@ -110,7 +110,11 @@ primitive_\label:
 
 # execute the word placed `addr`
 #
-# ( i * x addr -- j * x )
+#    ( addr1 -- )
+# R: ( -- addr2 )
+#
+#   addr1: a data field address of execution target word
+#   addr2: an address return back after execution
 #
 	DEFWORD "EXEC", 4, "EXEC", 0
 	RPUSH r15
