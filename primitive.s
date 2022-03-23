@@ -495,6 +495,26 @@ _to_body_end:
 	PPUSH rax
 	NEXT
 
+# transfer a value from pstack to rstack
+#
+#    ( v -- )
+# R: ( -- v )
+#
+	DEFWORD ">R", 2, "RPUSH", 0
+	PPOP rax
+	RPUSH rax
+	NEXT
+
+# transfer a value from rstack to pstack
+#
+#    ( -- v)
+# R: ( v -- )
+#
+	DEFWORD "R>", 2, "RPOP", 0
+	RPOP rax
+	PPUSH rax
+	NEXT
+
 ##
 # text input primitives
 #
