@@ -199,7 +199,7 @@ primitive_\label:
 # ( -- )
 #
 	DEFWORD "B", 1, "B", 0x00
-	mov rax, [r15]
+	mov rax, qword ptr [r15]
 	mov r15, rax
 	NEXT
 
@@ -209,12 +209,13 @@ primitive_\label:
 # ( bool -- )
 #
 	DEFWORD "BZ", 1, "BZ", 0x00
-	PPOP rax
-	cmp rax, 0
-	je _bz_end
-	mov rax, [r15]
+	mov rax, qword ptr [r15]
+	add r15, 8
+	PPOP rbx
+	cmp rbx, 0
+	je _bz_no_branch
 	mov r15, rax
-_bz_end:
+_bz_no_branch:
 	NEXT
 
 ## system words
