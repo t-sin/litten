@@ -165,28 +165,30 @@ export_primitives:
 #     ( -- addr )
 #
 	DEFWORD "IF", "IF", 0x80
+	COMPILE_COMPILE_PRIM DUP
 	COMPILE_COMPILE_PRIM BZ
 	COMPILE_PRIM FW_MARK
 	COMPILE_PRIM EXIT
 	ENDDEF
 
-## introduce an else clause to IF. this word is available in compiler mode.
-##
-##    ( bool -- )
-##
-## in compilation:
-##    ( addr -- addr )
-##
-#	DEFWORD "ELSE", "ELSE", 0x80
-#	CMP_P FW_RESOLVE
-#	LIT_P  NOT
-#	CMP_P COMMA
-#	LIT_P  NOT
-#	CMP_P COMMA
-#	CMP_P FW_MARK
-#	ENDDEF
+# introduce an else clause to IF. this word is available in compiler mode.
+#
+#    ( bool -- )
+#
+# in compilation:
+#    ( addr1 -- addr2 )
+#
+	DEFWORD "ELSE", "ELSE", 0x80
+	COMPILE_PRIM FW_RESOLVE
+	COMPILE_COMPILE_PRIM NOT
+	COMPILE_COMPILE_PRIM BZ
+	COMPILE_PRIM FW_MARK
+	COMPILE_PRIM EXIT
+	ENDDEF
 
 # terminate IF with catch branching. this word is available in compiler mode.
+#
+#    ( -- )
 #
 # in compilation:
 #    ( addr -- )
@@ -201,6 +203,9 @@ export_primitives:
 	DEFWORD "EMITZNZ", "EMITZNZ", 0x00
 	EXECUTE IF
 	COMPILE_LIT 'z
+	COMPILE_PRIM EMIT
+	EXECUTE ELSE
+	COMPILE_LIT 'n
 	COMPILE_PRIM EMIT
 	EXECUTE ENDIF
 	COMPILE_PRIM EXIT
@@ -222,7 +227,7 @@ export_primitives:
 
 setup_builtins:
 	DEFINE IF
-#	DEFINE ELSE
+	DEFINE ELSE
 	DEFINE ENDIF
 	DEFINE EMITZNZ
 	PRIMITIVE EXIT
@@ -232,6 +237,6 @@ main_code:
 	DOCOL setup_builtins
 	LITERAL 0
 	EXECUTE EMITZNZ
-	LITERAL 1
+	LITERAL -1
 	EXECUTE EMITZNZ
 	PRIMITIVE QUIT
