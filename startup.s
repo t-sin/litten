@@ -106,7 +106,10 @@ initialize:
 
 main_code:
 	DOCOL initialize
+	DOCOL export_primitives
 	EXECUTE FOUR
+	LITERAL 'h
+	EXECUTE EMIT
 	PRIMITIVE QUIT
 
 
@@ -120,6 +123,7 @@ main_code:
 	.macro REDEF name label flags
 	DEFWORD "\name", "\label", \flags
 	COMPILE_PRIM \label
+	COMPILE_PRIM EXIT
 	ENDDEF
 	.endm
 
