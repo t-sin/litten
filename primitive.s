@@ -740,7 +740,7 @@ _copy_str_loop:
 	PPOP rbx
 	cmp rax, rbx
 	jne _eq_not_equal
-	mov rax, 1
+	mov rax, -1
 	jmp _eq_end
 _eq_not_equal:
 	mov rax, 0
