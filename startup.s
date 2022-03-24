@@ -109,38 +109,40 @@ main_code:
 	EXECUTE FOUR
 	PRIMITIVE QUIT
 
+
 ## REWRITEING...
-#
-#
-## redefine primitives as words
+
 ##
-#	.macro REDEF name label flags
-#	DEFWORD "\name", "\label", \flags
-#	CMP_P \label
-#	ENDDEF
-#	.endm
+# macros for exporting primitives
 #
-## export a pirimitive by setting up
-## to hide dengerous primitives in the primitive dictionary
-##
-#	.macro EXPORT label
-#	DOCOL defword_\label
-#	.endm
-#
-#	REDEF "EMIT", "EMIT", 0x00
-#	REDEF ">R", "RPUSH", 0x00
-#	REDEF ">R", "RPOP", 0x00
-#	REDEF "=", "EQ", 0x00
-#	REDEF "NOT", "NOT", 0x00
-#
-#export_primitives:
-#	EXPORT EMIT
-#	EXPORT RPUSH
-#	EXPORT RPOP
-#	EXPORT EQ
-#	EXPORT NOT
-#	PRIMITIVE EXIT
-#
+
+# redefine primitives as words
+	.macro REDEF name label flags
+	DEFWORD "\name", "\label", \flags
+	COMPILE_PRIM \label
+	ENDDEF
+	.endm
+
+# export a pirimitive by setting up
+# to hide dengerous primitives in the primitive dictionary
+	.macro EXPORT label
+	DOCOL define_word_\label
+	.endm
+
+	REDEF "EMIT", "EMIT", 0x00
+	REDEF ">R", "RPUSH", 0x00
+	REDEF ">R", "RPOP", 0x00
+	REDEF "=", "EQ", 0x00
+	REDEF "NOT", "NOT", 0x00
+
+export_primitives:
+	EXPORT EMIT
+	EXPORT RPUSH
+	EXPORT RPOP
+	EXPORT EQ
+	EXPORT NOT
+	PRIMITIVE EXIT
+
 ###
 ## built-in words
 ##
