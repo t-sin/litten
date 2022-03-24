@@ -35,15 +35,15 @@
 	.endm
 
 # embed codes to compile a word invocation into HERE
-	.macro COMPILE_PRIM label
+	.macro COMPILE_PRM label
 	LITERAL primitive_\label
 	PRIMITIVE COMMA
 	.endm
 
 # embed codes to compile codes to compile a primitive invocation.
-	.macro COMPILE_COMPILE_PRIM label
+	.macro COMPILE_COMPILE_PRM label
 	COMPILE_LIT primitive_\label
-	COMPILE_PRIM COMMA
+	COMPILE_PRM COMMA
 	.endm
 
 ##
@@ -93,7 +93,7 @@ define_word_\label:
 #	PRIMITIVE FIND
 #	PRIMITIVE DROP
 #	PRIMITIVE TO_BODY
-#	COMPILE_PRIM EXEC
+#	COMPILE_PRM EXEC
 #	PRIMITIVE COMMA
 #	.endm
 #
@@ -102,8 +102,8 @@ define_word_\label:
 #
 #	DEFWORD "FOUR", "FOUR", 0
 #	COMPILE_LIT '*
-#	COMPILE_PRIM EMIT
-#	COMPILE_PRIM EXIT
+#	COMPILE_PRM EMIT
+#	COMPILE_PRM EXIT
 #	ENDDEF
 #
 #initialize:
@@ -126,8 +126,8 @@ define_word_\label:
 # redefine primitives as words
 	.macro REDEF name label flags
 	DEFWORD "\name", "\label", \flags
-	COMPILE_PRIM \label
-	COMPILE_PRIM EXIT
+	COMPILE_PRM \label
+	COMPILE_PRM EXIT
 	ENDDEF
 	.endm
 
@@ -165,10 +165,10 @@ export_primitives:
 #     ( -- addr )
 #
 	DEFWORD "IF", "IF", 0x80
-	COMPILE_COMPILE_PRIM DUP
-	COMPILE_COMPILE_PRIM BZ
-	COMPILE_PRIM FW_MARK
-	COMPILE_PRIM EXIT
+	COMPILE_COMPILE_PRM DUP
+	COMPILE_COMPILE_PRM BZ
+	COMPILE_PRM FW_MARK
+	COMPILE_PRM EXIT
 	ENDDEF
 
 # introduce an else clause to IF. this word is available in compiler mode.
@@ -179,11 +179,11 @@ export_primitives:
 #    ( addr1 -- addr2 )
 #
 	DEFWORD "ELSE", "ELSE", 0x80
-	COMPILE_PRIM FW_RESOLVE
-	COMPILE_COMPILE_PRIM NOT
-	COMPILE_COMPILE_PRIM BZ
-	COMPILE_PRIM FW_MARK
-	COMPILE_PRIM EXIT
+	COMPILE_PRM FW_RESOLVE
+	COMPILE_COMPILE_PRM NOT
+	COMPILE_COMPILE_PRM BZ
+	COMPILE_PRM FW_MARK
+	COMPILE_PRM EXIT
 	ENDDEF
 
 # terminate IF with catch branching. this word is available in compiler mode.
@@ -194,8 +194,8 @@ export_primitives:
 #    ( addr -- )
 #
 	DEFWORD "ENDIF", "ENDIF", 0x80
-	COMPILE_PRIM FW_RESOLVE
-	COMPILE_PRIM EXIT
+	COMPILE_PRM FW_RESOLVE
+	COMPILE_PRM EXIT
 	ENDDEF
 
 # a word for testing IF ~ ELSE ~ ENDIF
@@ -203,12 +203,12 @@ export_primitives:
 	DEFWORD "EMITZNZ", "EMITZNZ", 0x00
 	EXECUTE IF
 	COMPILE_LIT 'z
-	COMPILE_PRIM EMIT
+	COMPILE_PRM EMIT
 	EXECUTE ELSE
 	COMPILE_LIT 'n
-	COMPILE_PRIM EMIT
+	COMPILE_PRM EMIT
 	EXECUTE ENDIF
-	COMPILE_PRIM EXIT
+	COMPILE_PRM EXIT
 	ENDDEF
 
 # read one token delimited with `char`
