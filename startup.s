@@ -26,7 +26,7 @@
 	.dc.a \codeptr
 	.endm
 
-# embed codes to compile a valueas a literal into HERE.
+# embed codes to compile a valueas into HERE.
 	.macro COMPILE_LIT val
 	LITERAL primitive_LIT
 	PRIMITIVE COMMA
@@ -38,6 +38,12 @@
 	.macro COMPILE_PRIM label
 	LITERAL primitive_\label
 	PRIMITIVE COMMA
+	.endm
+
+# embed codes to compile codes to compile a primitive invocation.
+	.macro COMPILE_COMPILE_PRIM label
+	COMPILE_LIT primitive_\label
+	COMPILE_PRIM COMMA
 	.endm
 
 ##
@@ -92,28 +98,26 @@ define_word_\label:
 #	.endm
 #
 
-# defining macro example:
-
-	DEFWORD "FOUR", "FOUR", 0
-	COMPILE_LIT '*
-	COMPILE_PRIM EMIT
-	COMPILE_PRIM EXIT
-	ENDDEF
-
-initialize:
-	DEFINE FOUR
-	PRIMITIVE EXIT
-
-main_code:
-	DOCOL initialize
-	DOCOL export_primitives
-	EXECUTE FOUR
-	LITERAL 'h
-	EXECUTE EMIT
-	PRIMITIVE QUIT
-
-
-## REWRITEING...
+## defining macro example:
+#
+#	DEFWORD "FOUR", "FOUR", 0
+#	COMPILE_LIT '*
+#	COMPILE_PRIM EMIT
+#	COMPILE_PRIM EXIT
+#	ENDDEF
+#
+#initialize:
+#	DEFINE FOUR
+#	PRIMITIVE EXIT
+#
+#main_code:
+#	DOCOL initialize
+#	DOCOL export_primitives
+#	EXECUTE FOUR
+#	LITERAL 'h
+#	EXECUTE EMIT
+#	PRIMITIVE QUIT
+#
 
 ##
 # macros for exporting primitives
@@ -147,25 +151,25 @@ export_primitives:
 	EXPORT NOT
 	PRIMITIVE EXIT
 
-###
-## built-in words
+## REWRITEING...
+
 ##
+# built-in words
 #
-## start to branch conditionally. this word is available in compiler mode.
-##
-##    ( bool -- bool )
-##
-## in compilation:
-##     ( -- addr )
-##
-#	DEFWORD "IF", "IF", 0x80
-#	LIT_P DUP
-#	CMP_P COMMA
-#	LIT_P BZ
-#	CMP_P COMMA
-#	CMP_P FW_MARK
-#	ENDDEF
+
+# start to branch conditionally. this word is available in compiler mode.
 #
+#    ( bool -- bool )
+#
+# in compilation:
+#     ( -- addr )
+#
+	DEFWORD "IF", "IF", 0x80
+	COMPILE_COMPILE_PRIM BZ
+	COMPILE_PRIM FW_MARK
+	COMPILE_PRIM EXIT
+	ENDDEF
+
 ## introduce an else clause to IF. this word is available in compiler mode.
 ##
 ##    ( bool -- )
@@ -181,56 +185,53 @@ export_primitives:
 #	CMP_P COMMA
 #	CMP_P FW_MARK
 #	ENDDEF
-#
-## terminate IF with catch branching. this word is available in compiler mode.
-##
-## C: ( addr -- )
-##
-#	DEFWORD "THEN", "THEN", 0x80
-#	CMP_P FW_RESOLVE
-#	ENDDEF
-#
-## a word for testing IF ~ ELSE ~ THEN
-## ( u -- )
-#	DEFWORD "EMITZNZ", "EMITZNZ", 0x00
-#	EXECUTE IF
-#	CMP_L 'z
-#	CMP_W EMIT
-#	EXECUTE ELSE
-#	CMP_L 'n
-#	CMP_W EMIT
-#	CMP_L 'z
-#	CMP_W EMIT
-#	EXECUTE THEN
-#	CMP_P EXIT
-#	ENDDEF
-#
-## read one token delimited with `char`
-##
-## ( char -- addr )
-##
-##   char: a delimiter character
-##   addr: a pointer to string read formatted as bytes: [len ch0 ch1 ...]
-##
-#	DEFWORD "WORD", "WORD", 0x00
-#	# IFを実装してから書く
-#	ENDDEF
-#
-###
-## startup codes
-#
-#setup_builtins:
-##	DOCOL defword_WORD
-#	DEFINE IF
-#	DEFINE ELSE
-#	DEFINE THEN
-#	PRIMITIVE EXIT
-#
-#main_code:
-#	DOCOL export_primitives
-#	DOCOL setup_builtins
-#	DEFINE EMITZNZ
-#	LITERAL 1
-#	EXECUTE EMITZNZ
-#	PRIMITIVE QUIT
 
+# terminate IF with catch branching. this word is available in compiler mode.
+#
+# in compilation:
+#    ( addr -- )
+#
+	DEFWORD "ENDIF", "ENDIF", 0x80
+	COMPILE_PRIM FW_RESOLVE
+	COMPILE_PRIM EXIT
+	ENDDEF
+
+# a word for testing IF ~ ELSE ~ ENDIF
+# ( u -- )
+	DEFWORD "EMITZNZ", "EMITZNZ", 0x00
+	EXECUTE IF
+	COMPILE_LIT 'z
+	COMPILE_PRIM EMIT
+	EXECUTE ENDIF
+	COMPILE_PRIM EXIT
+	ENDDEF
+
+# read one token delimited with `char`
+#
+# ( char -- addr )
+#
+#   char: a delimiter character
+#   addr: a pointer to string read formatted as bytes: [len ch0 ch1 ...]
+#
+	DEFWORD "WORD", "WORD", 0x00
+	# IFを実装してから書く
+	ENDDEF
+
+##
+# startup codes
+
+setup_builtins:
+	DEFINE IF
+#	DEFINE ELSE
+	DEFINE ENDIF
+	DEFINE EMITZNZ
+	PRIMITIVE EXIT
+
+main_code:
+	DOCOL export_primitives
+	DOCOL setup_builtins
+	LITERAL 0
+	EXECUTE EMITZNZ
+	LITERAL 1
+	EXECUTE EMITZNZ
+	PRIMITIVE QUIT
