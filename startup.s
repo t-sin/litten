@@ -213,13 +213,22 @@ export_primitives:
 
 # read one token delimited with `char`
 #
-# ( char -- addr )
+# ( char -- addr u )
 #
 #   char: a delimiter character
-#   addr: a pointer to string read formatted as bytes: [len ch0 ch1 ...]
+#   addr: a pointer to string read
+#   u:    a number of characters read into addr
 #
 	DEFWORD "WORD", "WORD", 0x00
-	# IFを実装してから書く
+	# IFを実装してから書く。
+	# ループもいるな。
+	#
+	# アルゴリズム:
+	#   1. ストリームが空なら補充
+	#   2. 補充がエラーなら再度補充
+	#   3. ストリームから1文字先読み
+	#   4. デリミタ or 改行なら1文字消費して文字列addrと長さuをスタックに置いて終了
+	#   5. それ以外なら消費しline bufferに追記して3へ
 	ENDDEF
 
 ##
