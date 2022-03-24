@@ -135,7 +135,7 @@ main_code:
 
 	REDEF "EMIT", "EMIT", 0x00
 	REDEF ">R", "RPUSH", 0x00
-	REDEF ">R", "RPOP", 0x00
+	REDEF "R>", "RPOP", 0x00
 	REDEF "=", "EQ", 0x00
 	REDEF "NOT", "NOT", 0x00
 
