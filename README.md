@@ -2,7 +2,7 @@
 
 **This project only run on x86-64 GNU/Linux.**
 
-## Run in a Docker container
+## Runnin on a Docker container
 
 ```
 $ docker build -t litten .
