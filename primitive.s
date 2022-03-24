@@ -155,8 +155,6 @@ primitive_\label:
 #
 	DEFWORD ">MARK", 5, "FW_MARK", 0x80
 	PPUSH r12
-	mov rax, 0
-	mov qword ptr [r12], rax
 	add r12, 8
 	NEXT
 
@@ -178,7 +176,6 @@ primitive_\label:
 #
 	DEFWORD "<MARK", 5, "BW_MARK", 0x80
 	PPUSH r12
-	mov rax, 0
 	NEXT
 
 # resolve marked empty address for backward branching.
