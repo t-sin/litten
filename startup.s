@@ -198,6 +198,35 @@ export_primitives:
 	COMPILE_PRM EXIT
 	ENDDEF
 
+# start to loop. this word is available in compiler mode.
+# BEGIN is used with two type loop:
+#    1. `BEGIN ... bool UNTIL`              ... do loop until bool is true
+#    2. `BEGIN ... bool WHILE ... REPEAT`   ... do loop until bool is false
+#
+#    ( -- )
+#
+# in compilation:
+#    ( -- addr )
+#
+	DEFWORD "BEGIN", "BEGIN", 0x80
+	COMPILE_PRM BW_MARK
+	COMPILE_PRM EXIT
+	ENDDEF
+
+# terminate BEGIN-UNTIL loop. this word is available in compiler mode.
+#
+#    ( bool -- )
+#
+# in compilation:
+#    ( addr -- )
+#
+	DEFWORD "UNTIL", "UNTIL", 0x80
+	COMPILE_COMPILE_PRM NOT
+	COMPILE_COMPILE_PRM BZ
+	COMPILE_PRM BW_RESOLVE
+	COMPILE_PRM EXIT
+	ENDDEF
+
 # a word for testing IF ~ ELSE ~ ENDIF
 # ( u -- )
 	DEFWORD "EMITZNZ", "EMITZNZ", 0x00
@@ -208,6 +237,24 @@ export_primitives:
 	COMPILE_LIT 'n
 	COMPILE_PRM EMIT
 	EXECUTE ENDIF
+	COMPILE_PRM EXIT
+	ENDDEF
+
+# a word for testing BEGIN-UNTIL loop
+# ( -- )
+	DEFWORD "BU_LOOP", "BU_LOOP", 0x00
+	COMPILE_LIT 0
+	EXECUTE BEGIN
+	COMPILE_PRM DUP
+	COMPILE_LIT 'a
+	COMPILE_PRM ADD
+	COMPILE_PRM EMIT
+	COMPILE_LIT 1
+	COMPILE_PRM ADD
+	COMPILE_PRM DUP
+	COMPILE_LIT 10
+	COMPILE_PRM EQ
+	EXECUTE UNTIL
 	COMPILE_PRM EXIT
 	ENDDEF
 
@@ -238,14 +285,14 @@ setup_builtins:
 	DEFINE IF
 	DEFINE ELSE
 	DEFINE ENDIF
+	DEFINE BEGIN
+	DEFINE UNTIL
 	DEFINE EMITZNZ
+	DEFINE BU_LOOP
 	PRIMITIVE EXIT
 
 main_code:
 	DOCOL export_primitives
 	DOCOL setup_builtins
-	LITERAL 0
-	EXECUTE EMITZNZ
-	LITERAL -1
-	EXECUTE EMITZNZ
+	EXECUTE BU_LOOP
 	PRIMITIVE QUIT
