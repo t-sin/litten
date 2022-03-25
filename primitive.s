@@ -1,7 +1,49 @@
 	.intel_syntax noprefix
+
+	.globl setup_interpreter
+	.globl inner_interpreter
+
 	.text
 
 .include "macro.s"
+
+# The inner interpreter
+#
+inner_interpreter:
+	mov rax, qword ptr [r15]
+	add r15, 8
+	jmp rax
+
+## setup the inner interpreter
+#
+# input:
+#   rax: startup code address
+#
+# this Forth system uses these registers specially:
+#
+#   r15: Forth's instruction pointer (IP)
+#   r14: Return stack pointer (RSP)
+#   r13: Parameter stack pointer (SP)
+#   r12: Next dictionary entry (HERE)
+#   r11: Latest dictionary entry (LATEST)
+#
+
+	# なんかこれうごかない…
+	# .set IP,     r15
+	# .set RSP,    r14
+	# .set SP,     r13
+	# .set HERE,   r12
+	# .set LATEST, r11
+
+setup_interpreter:
+	mov r15, rax
+	lea r14, rstack_bottom
+	lea r13, pstack_bottom
+	lea r12, dict_start
+#	lea r11, defword_link
+	mov r11, 0
+	ret
+
 
 ##
 # dictionary entry
