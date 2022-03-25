@@ -599,7 +599,7 @@ _peek_char:
 	mov ebx, dword ptr [input_stream_offset]
 	add rax, rbx
 	mov al, byte ptr [rax]
-	and al, 0xff
+	and rax, 0xff
 	PPUSH rax
 	NEXT
 
