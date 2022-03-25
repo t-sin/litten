@@ -311,6 +311,59 @@ export_primitives:
 	COMPILE_PRM EXIT
 	ENDDEF
 
+# receive a string from the input stream if no contents
+# if error occurs while receiving then retry receiving
+#
+# ( -- )
+#
+	DEFWORD "RECEIVE", "RECEIVE", 0x00
+	COMPILE_PRM NUM_IS
+	COMPILE_LIT 0
+	COMPILE_PRM EQ
+	COMPILE_PRM DUP
+	COMPILE_PRM NOT
+
+	EXECUTE IF
+	COMPILE_PRM EXIT
+	EXECUTE ENDIF
+
+	COMPILE_PRM RECV
+	EXECUTE BEGIN
+	COMPILE_LIT -1
+	COMPILE_PRM EQ
+	EXECUTE WHILE
+	COMPILE_PRM RECV
+	EXECUTE REPEAT
+	COMPILE_PRM EXIT
+	ENDDEF
+
+# initialize the input buffer
+#
+# ( -- )
+#
+	DEFWORD "INIT_IB", "INIT_IB", 0x00
+	COMPILE_LIT 0
+	COMPILE_PRM NUM_IB
+	COMPILE_PRM STORE
+	COMPILE_PRM EXIT
+	ENDDEF
+
+# write one char into the input buffer
+#
+# ( ch -- )
+#
+	DEFWORD "PUT_IB", "PUT_IB", 0x00
+	COMPILE_PRM IB
+	COMPILE_PRM STORE
+	COMPILE_PRM NUM_IB
+	COMPILE_PRM CFETCH
+	COMPILE_LIT 1
+	COMPILE_PRM ADD
+	COMPILE_PRM NUM_IB
+	COMPILE_PRM STORE
+	COMPILE_PRM EXIT
+	ENDDEF
+
 # read one token delimited with `char`
 #
 # ( char -- addr u )
@@ -320,15 +373,46 @@ export_primitives:
 #   u:    a number of characters read into addr
 #
 	DEFWORD "WORD", "WORD", 0x00
-	# IFを実装してから書く。
-	# ループもいるな。
-	#
-	# アルゴリズム:
-	#   1. ストリームが空なら補充
-	#   2. 補充がエラーなら再度補充
-	#   3. ストリームから1文字先読み
-	#   4. デリミタ or 改行なら1文字消費して文字列addrと長さuをスタックに置いて終了
-	#   5. それ以外なら消費しline bufferに追記して3へ
+	# ( delim )
+	COMPILE_WORD INIT_IB
+	EXECUTE BEGIN
+	COMPILE_WORD RECEIVE
+	## peek a character from the input stream
+	COMPILE_PRM PEEK
+	COMPILE_PRM NEXT
+	# ( delim ch )
+	COMPILE_LIT 1
+	COMPILE_PRM PICK
+	COMPILE_LIT 1
+	COMPILE_PRM PICK
+	# ( delim ch delim ch )
+	COMPILE_PRM EQ
+	# ( delim ch delim? )
+	COMPILE_LIT 1
+	COMPILE_PRM PICK
+	COMPILE_LIT '\n
+	COMPILE_PRM EQ
+	# ( delim ch delim? newline? )
+	COMPILE_PRM OR
+	COMPILE_PRM SWAP
+	COMPILE_LIT 1
+	COMPILE_PRM PICK
+	COMPILE_PRM NOT
+	# ( delim end? ch not-end? )
+	EXECUTE IF
+	## if at the end, append a char read
+	COMPILE_WORD PUT_IB
+	EXECUTE ELSE
+	COMPILE_PRM DROP
+	EXECUTE ENDIF
+	# ( delim end? )
+	EXECUTE UNTIL
+
+	## break this loop if a char read is the delimiter or the newline
+	COMPILE_PRM DROP
+	COMPILE_PRM IB
+	COMPILE_PRM NUM_IB
+	COMPILE_PRM EXIT
 	ENDDEF
 
 ##
@@ -342,6 +426,15 @@ setup_builtins:
 	DEFINE UNTIL
 	DEFINE WHILE
 	DEFINE REPEAT
+
+	DEFINE RECEIVE
+	DEFINE INIT_IB
+	DEFINE PUT_IB
+
+	DEFINE WORD
+	PRIMITIVE EXIT
+
+setup_testers:
 	DEFINE EMITZNZ
 	DEFINE BU_LOOP
 	DEFINE BW_LOOP
@@ -350,5 +443,8 @@ setup_builtins:
 main_code:
 	DOCOL export_primitives
 	DOCOL setup_builtins
-	EXECUTE BW_LOOP
+#	DOCOL setup_testers
+	LITERAL '*
+	EXECUTE WORD
+	PRIMITIVE PRINT
 	PRIMITIVE QUIT
