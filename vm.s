@@ -710,7 +710,7 @@ _recv_end:
 #
 # ( -- addr )
 #
-	DEFWORD ">IB", 3, "TO_IB", 0
+	DEFWORD ">IB", 3, "IB", 0
 	lea rax, line_buffer
 	PPUSH rax
 	NEXT
@@ -719,7 +719,7 @@ _recv_end:
 #
 # ( -- addr )
 #
-	DEFWORD "#IB", 3, "NUMIB", 0
+	DEFWORD "#IB", 3, "NUM_IB", 0
 	lea rax, line_buffer_count
 	PPUSH rax
 	NEXT
