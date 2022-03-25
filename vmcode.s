@@ -87,6 +87,18 @@ define_word_\label:
 	PRIMITIVE EXEC
 	.endm
 
+# embed codes to compile a invocation of a word defined at run-time.
+	.macro COMPILE_WORD label
+	COMPILE_PRM LIT
+	LITERAL word_\label
+	LITERAL word_\label\()_namelen
+	PRIMITIVE FIND
+	PRIMITIVE DROP
+	PRIMITIVE TO_BODY
+	PRIMITIVE COMMA
+	COMPILE_PRM EXEC
+	.endm
+
 ## defining macro example:
 #
 #	DEFWORD "FOUR", "FOUR", 0
