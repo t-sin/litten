@@ -247,12 +247,12 @@ primitive_\label:
 #
 # ( bool -- )
 #
-	DEFWORD "BZ", 1, "BZ", 0x00
+	DEFWORD "BZ", 2, "BZ", 0x00
 	mov rax, qword ptr [r15]
 	add r15, 8
 	PPOP rbx
 	cmp rbx, 0
-	je _bz_no_branch
+	jne _bz_no_branch
 	mov r15, rax
 _bz_no_branch:
 	NEXT
