@@ -86,17 +86,6 @@ define_word_\label:
 	PRIMITIVE TO_BODY
 	PRIMITIVE EXEC
 	.endm
-#
-#	.macro COMPILE_WORD label
-#	LITERAL word_\label
-#	LITERAL word_\label\()_namelen
-#	PRIMITIVE FIND
-#	PRIMITIVE DROP
-#	PRIMITIVE TO_BODY
-#	COMPILE_PRM EXEC
-#	PRIMITIVE COMMA
-#	.endm
-#
 
 ## defining macro example:
 #
