@@ -534,6 +534,26 @@ _to_body_end:
 	PPUSH rbx
 	NEXT
 
+# copy a value from the top of pstack
+#
+# ( v_n-1 v_n-2 ... v_0 n_1 -- v_n-1 ... v_0 v_n-1 )
+#
+	DEFWORD "PICK", 4, "PICK", 0
+	PPOP rax
+	mov rbx, 0
+_pick_loop:
+	cmp rbx, rax
+	je _pick_end
+	add rbx, 1
+	jmp _pick_loop
+_pick_end:
+	mov rcx, rbx
+	shl rcx, 3
+	add rcx, r13
+	mov rax, qword ptr [rcx]
+	PPUSH rax
+	NEXT
+
 # transfer a value from pstack to rstack
 #
 #    ( v -- )
