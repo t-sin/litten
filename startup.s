@@ -195,7 +195,7 @@ export_primitives:
 #    ( -- )
 #
 # in compilation:
-#    ( -- addr )
+#    ( -- begin )
 #
 	DEFWORD "BEGIN", "BEGIN", 0x80
 	COMPILE_PRM BW_MARK
@@ -207,12 +207,41 @@ export_primitives:
 #    ( bool -- )
 #
 # in compilation:
-#    ( addr -- )
+#    ( begin -- )
 #
 	DEFWORD "UNTIL", "UNTIL", 0x80
 	COMPILE_COMPILE_PRM NOT
 	COMPILE_COMPILE_PRM BZ
 	COMPILE_PRM BW_RESOLVE
+	COMPILE_PRM EXIT
+	ENDDEF
+
+# check the loop condition in BEGIN-WHILE loop. this word is available in compiler mode.
+#
+#    ( bool -- )
+#
+# in compilation:
+#    ( begin -- begin repeat )
+#
+	DEFWORD "WHILE", "WHILE", 0x80
+	COMPILE_COMPILE_PRM NOT
+	COMPILE_COMPILE_PRM BZ
+	COMPILE_PRM FW_MARK
+	COMPILE_PRM EXIT
+	ENDDEF
+
+# terminate BEGIN-WHILE loop. this word is available in compiler mode.
+#
+#    ( -- )
+#
+# in compilation:
+#    ( begin repeat -- )
+#
+	DEFWORD "REPEAT", "REPEAT", 0x80
+	COMPILE_PRM SWAP
+	COMPILE_COMPILE_PRM B
+	COMPILE_PRM BW_RESOLVE
+	COMPILE_PRM FW_RESOLVE
 	COMPILE_PRM EXIT
 	ENDDEF
 
@@ -247,6 +276,26 @@ export_primitives:
 	COMPILE_PRM EXIT
 	ENDDEF
 
+# a word for testing BEGIN-WHILE loops
+# ( -- )
+	DEFWORD "BW_LOOP", "BW_LOOP", 0x00
+	COMPILE_LIT 0
+	EXECUTE BEGIN
+	COMPILE_PRM DUP
+	COMPILE_LIT 10
+	COMPILE_PRM EQ
+	COMPILE_PRM NOT
+	EXECUTE WHILE
+	COMPILE_PRM DUP
+	COMPILE_LIT 'A
+	COMPILE_PRM ADD
+	COMPILE_PRM EMIT
+	COMPILE_LIT 1
+	COMPILE_PRM ADD
+	EXECUTE REPEAT
+	COMPILE_PRM EXIT
+	ENDDEF
+
 # read one token delimited with `char`
 #
 # ( char -- addr u )
@@ -276,12 +325,15 @@ setup_builtins:
 	DEFINE ENDIF
 	DEFINE BEGIN
 	DEFINE UNTIL
+	DEFINE WHILE
+	DEFINE REPEAT
 	DEFINE EMITZNZ
 	DEFINE BU_LOOP
+	DEFINE BW_LOOP
 	PRIMITIVE EXIT
 
 main_code:
 	DOCOL export_primitives
 	DOCOL setup_builtins
-	EXECUTE BU_LOOP
+	EXECUTE BW_LOOP
 	PRIMITIVE QUIT
