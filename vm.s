@@ -496,9 +496,9 @@ _to_body_end:
 #
 	DEFWORD "C@", 1, "CFETCH", 0
 	PPOP rax
-	mov al, byte ptr [rax]
-	and rax, 0xff
-	PPUSH rax
+	mov rbx, 0
+	mov bl, byte ptr [rax]
+	PPUSH rbx
 	NEXT
 
 ##
