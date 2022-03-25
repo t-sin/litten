@@ -792,7 +792,7 @@ _copy_str_loop:
 
 # test a numeric equality
 #
-# ( n1 n2 -- bool )
+# ( u1 u2 -- u3 )
 #
 	DEFWORD "=", 1, "EQ", 0x00
 	PPOP rax
@@ -807,13 +807,24 @@ _eq_end:
 	PPUSH rax
 	NEXT
 
-# invert a bool value
+# invert all bits
 #
-# ( bool1 -- bool2 )
+# ( u1 -- u2 )
 #
 	DEFWORD "NOT", 3, "NOT", 0x00
 	PPOP rax
 	not rax
+	PPUSH rax
+	NEXT
+
+# bit operation: or
+#
+# ( u1 u2  -- u3 )
+#
+	DEFWORD "OR", 2, "OR", 0x00
+	PPOP rax
+	PPOP rbx
+	or rax, rbx
 	PPUSH rax
 	NEXT
 

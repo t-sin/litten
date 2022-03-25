@@ -131,6 +131,7 @@ define_word_\label:
 	REDEF "R>", "RPOP", 0x00
 	REDEF "=", "EQ", 0x00
 	REDEF "NOT", "NOT", 0x00
+	REDEF "OR", "OR", 0x00
 
 export_primitives:
 	EXPORT EMIT
@@ -138,6 +139,7 @@ export_primitives:
 	EXPORT RPOP
 	EXPORT EQ
 	EXPORT NOT
+	EXPORT OR
 	PRIMITIVE EXIT
 
 ## REWRITEING...
