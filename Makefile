@@ -1,5 +1,5 @@
 PROGRAM = litten
-ASM = litten.o startup.o data.o primitive.o syscall.o
+ASM = litten.o startup.o vm.o data.o syscall.o
 
 ASFLAGS = -msyntax=intel
 
