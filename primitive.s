@@ -488,8 +488,8 @@ _to_body_end:
 	DEFWORD "SWAP", 4, "SWAP", 0
 	PPOP rax
 	PPOP rbx
-	PPUSH rbx
 	PPUSH rax
+	PPUSH rbx
 	NEXT
 
 # transfer a value from pstack to rstack
